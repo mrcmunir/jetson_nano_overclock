@@ -335,6 +335,7 @@ static struct dvfs cpu_dvfs = {
 		{1836000000UL,	{  5100873,  -279186,     4747 } }, \
 		{1912500000UL,	{  5100873,  -279186,     4747 } }, \
 		{2014500000UL,	{  5100873,  -279186,     4747 } }, \
+		{2218500000UL,	{  5100873,  -279186,     4747 } }, \
 		{0,           	{ } }, \
 	}
 
@@ -403,14 +404,14 @@ static struct cpu_dvfs cpu_fv_dvfs_table[] = {
 		.speedo_id = 9,
 		.process_id = 0,
 		.min_mv = 900,
-		.max_mv = 1227,
+		.max_mv = 1300,
 		CPU_PLL_CVB_TABLE_EUCM2,
 	},
 	{
 		.speedo_id = 9,
 		.process_id = 1,
 		.min_mv = 900,
-		.max_mv = 1227,
+		.max_mv = 1300,
 		CPU_PLL_CVB_TABLE_EUCM2,
 	},
 	{
@@ -689,6 +690,8 @@ static struct dvfs cpu_lp_dvfs = {
 		{  844800, { }, {  1233208,     8144,     -940,      808,   -21583,      226 }, }, \
 		{  921600, { }, {  1275100,     8144,     -940,      808,   -21583,      226 }, }, \
 		{  998400, { }, {  1316991,     8144,     -940,      808,   -21583,      226 }, }, \
+		{ 1075200, { }, {  1358882,     8144,     -940,      808,   -21583,      226 }, }, \
+		{ 1152000, { }, {  1400774,     8144,     -940,      808,   -21583,      226 }, }, \
 		{ 0,	   { }, { }, }, \
 	}
 
@@ -772,8 +775,8 @@ static struct cvb_dvfs gpu_cvb_dvfs_table[] = {
 		.speedo_id = 2,
 		.process_id = -1,
 		.pll_min_millivolts = 818,
-		.max_mv = 1150,
-		.max_freq = 998400,
+		.max_mv = 1250,
+		.max_freq = 1152000,
 #ifdef CONFIG_TEGRA_USE_NA_GPCPLL
 		NA_FREQ_CVB_TABLE,
 #else
