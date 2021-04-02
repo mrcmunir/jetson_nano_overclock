@@ -558,7 +558,7 @@ static struct cpu_dvfs cpu_fv_dvfs_table[] = {
 		{ 1785000000UL, {  1120000,        0,        0 } }, \
 		{ 1887000000UL, {  1120000,        0,        0 } }, \
 		{ 1963500000UL, {  1120000,        0,        0 } }, \
-		{ 2091000000UL, {  1120000,        0,        0 } }, \
+		{ 2218500000UL, {  1120000,        0,        0 } }, \
 		{ 0,	        { } }, \
 	}, \
 	.pll_min_millivolts = 800
@@ -586,7 +586,7 @@ static struct cpu_dvfs cpu_fv_dvfs_table[] = {
 		{ 1785000000UL, {  1120000,        0,        0 } }, \
 		{ 1887000000UL, {  1120000,        0,        0 } }, \
 		{ 1963500000UL, {  1120000,        0,        0 } }, \
-		{ 2014500000UL, {  1120000,        0,        0 } }, \
+		{ 2218500000UL, {  1120000,        0,        0 } }, \
 		{ 0,	        { } }, \
 	}, \
 	.pll_min_millivolts = 800
@@ -595,13 +595,13 @@ static struct cpu_dvfs cpub01_fv_dvfs_table[] = {
 	{
 		.speedo_id = 2,
 		.process_id = -1,
-		.max_mv = 1120,
+		.max_mv = 1300,
 		CPUB01_PLL_CVB_TABLE_SLT,
 	},
 	{
 		.speedo_id = -1,
 		.process_id = -1,
-		.max_mv = 1120,
+		.max_mv = 1300,
 		CPUB01_PLL_CVB_TABLE,
 	},
 };
