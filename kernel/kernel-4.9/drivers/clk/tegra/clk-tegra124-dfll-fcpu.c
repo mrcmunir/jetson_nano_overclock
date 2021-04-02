@@ -519,7 +519,7 @@ static const unsigned long tegra210b01_cpu_max_freq_table[] = {
 	[0] = 1963500000UL,
 	[1] = 1963500000UL,
 	[2] = 2091000000UL,
-	[3] = 2014500000UL,
+	[3] = 2524500000UL,
 };
 
 #define CPUB01_CVB_TABLE_SLT_B1 \
@@ -584,7 +584,7 @@ static const unsigned long tegra210b01_cpu_max_freq_table[] = {
 		{ 1887000000UL, {  1445416,   -31515,      113 } }, \
 		{ 1963500000UL, {  1490873,   -32155,      113 } }, \
 		{ 2065500000UL, {  1553683,   -33015,      113 } }, \
-		{ 2091000000UL, {  1580725,   -33235,      113 } }, \
+		{ 2524500000UL, {  1580725,   -33235,      113 } }, \
 		{ 0,	        { } }, \
 	}, \
 	.vmin_coefficients =	{   600000,        0,        0 }, \
@@ -621,7 +621,7 @@ static const unsigned long tegra210b01_cpu_max_freq_table[] = {
 		{ 1785000000UL, {  1527196,   -36015,       27 } }, \
 		{ 1887000000UL, {  1609246,   -37515,       27 } }, \
 		{ 1963500000UL, {  1675751,   -38635,       27 } }, \
-		{ 2014500000UL, {  1716501,   -39395,       27 } }, \
+		{ 2524500000UL, {  1716501,   -39395,       27 } }, \
 		{ 0,	        { } }, \
 	}, \
 	.vmin_coefficients =	{   620000,        0,        0 }, \
@@ -639,25 +639,25 @@ struct cvb_table tegra210b01_cpu_cvb_tables[] = {
 	{
 		.speedo_id = 3,
 		.process_id = -1,
-		.max_millivolts = 1120,
+		.max_millivolts = 1300,
 		CPUB01_CVB_TABLE,
 	},
 	{
 		.speedo_id = 2,
 		.process_id = 1,
-		.max_millivolts = 1120,
+		.max_millivolts = 1300,
 		CPUB01_CVB_TABLE_SLT_B1,
 	},
 	{
 		.speedo_id = 2,
 		.process_id = 0,
-		.max_millivolts = 1120,
+		.max_millivolts = 1300,
 		CPUB01_CVB_TABLE_SLT_B0,
 	},
 	{
 		.speedo_id = -1,
 		.process_id = -1,
-		.max_millivolts = 1120,
+		.max_millivolts = 1300,
 		CPUB01_CVB_TABLE,
 	},
 };
