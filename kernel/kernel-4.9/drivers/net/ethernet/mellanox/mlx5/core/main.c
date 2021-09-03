@@ -786,11 +786,9 @@ static int mlx5_pci_init(struct mlx5_core_dev *dev, struct mlx5_priv *priv)
 
 	priv->numa_node = dev_to_node(&dev->pdev->dev);
 
-	priv->dbg_root = debugfs_create_dir(dev_name(&pdev->dev), mlx5_debugfs_root);
-	if (!priv->dbg_root) {
-		dev_err(&pdev->dev, "Cannot create debugfs dir, aborting\n");
-		return -ENOMEM;
-	}
+	if (mlx5_debugfs_root)
+		priv->dbg_root =
+			debugfs_create_dir(pci_name(pdev), mlx5_debugfs_root);
 
 	err = mlx5_pci_enable_device(dev);
 	if (err) {
@@ -1277,6 +1275,9 @@ static int init_one(struct pci_dev *pdev,
 	if (err)
 		goto clean_load;
 
+	if (mlx5_thermal_init(dev))
+		pr_info("failed to register thermal device\n");
+
 	pci_save_state(pdev);
 	return 0;
 
@@ -1300,6 +1301,7 @@ static void remove_one(struct pci_dev *pdev)
 	struct devlink *devlink = priv_to_devlink(dev);
 	struct mlx5_priv *priv = &dev->priv;
 
+	mlx5_thermal_deinit(dev);
 	devlink_unregister(devlink);
 	mlx5_unregister_device(dev);
 
@@ -1417,6 +1419,7 @@ static void shutdown(struct pci_dev *pdev)
 	struct mlx5_priv *priv = &dev->priv;
 
 	dev_info(&pdev->dev, "Shutdown was called\n");
+	mlx5_thermal_deinit(dev);
 	/* Notify mlx5 clients that the kernel is being shut down */
 	set_bit(MLX5_INTERFACE_STATE_SHUTDOWN, &dev->intf_state);
 	mlx5_unload_one(dev, priv, false);

@@ -3,7 +3,7 @@
  *
  * User-space interface to nvmap
  *
- * Copyright (c) 2011-2018, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2011-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -223,7 +223,7 @@ int nvmap_ioctl_create(struct file *filp, unsigned int cmd, void __user *arg)
 		op.size64 = op.size;
 
 	if ((cmd == NVMAP_IOC_CREATE) || (cmd == NVMAP_IOC_CREATE_64)) {
-		ref = nvmap_create_handle(client, op.size64);
+		ref = nvmap_create_handle(client, op.size64, false);
 		if (!IS_ERR(ref))
 			ref->handle->orig_size = op.size64;
 	} else if (cmd == NVMAP_IOC_FROM_FD) {
@@ -273,7 +273,8 @@ int nvmap_ioctl_create_from_va(struct file *filp, void __user *arg)
 		return -ENODEV;
 
 	ref = nvmap_create_handle_from_va(client, op.va,
-			op.size ? op.size : op.size64);
+			op.size ? op.size : op.size64,
+			op.flags);
 	if (IS_ERR(ref))
 		return PTR_ERR(ref);
 
@@ -387,6 +388,15 @@ int nvmap_ioctl_rw_handle(struct file *filp, int is_read, void __user *arg,
 		ret = set_vpr_fail_data((void *)addr, user_stride, elem_size, count);
 		nvmap_handle_put(h);
 		return ret ?: -EPERM;
+	}
+
+	/*
+	 * If Buffer is RO and write operation is asked from the buffer,
+	 * return error.
+	 */
+	if (h->is_ro && !is_read) {
+		nvmap_handle_put(h);
+		return -EPERM;
 	}
 
 	nvmap_kmaps_inc(h);
@@ -631,7 +641,7 @@ int nvmap_ioctl_create_from_ivc(struct file *filp, void __user *arg)
 			((1ULL << NVMAP_IVM_LENGTH_WIDTH) - 1)) << PAGE_SHIFT;
 		peer = (op.ivm_id >> NVMAP_IVM_IVMID_SHIFT);
 
-		ref = nvmap_create_handle(client, size);
+		ref = nvmap_create_handle(client, size, false);
 		if (IS_ERR(ref)) {
 			nvmap_heap_free(block);
 			return PTR_ERR(ref);
@@ -834,7 +844,7 @@ int nvmap_ioctl_gup_test(struct file *filp, void __user *arg)
 		goto put_handle;
 	}
 
-	err = nvmap_get_user_pages(op.va & PAGE_MASK, nr_page, pages);
+	err = nvmap_get_user_pages(op.va & PAGE_MASK, nr_page, pages, false, 0);
 	if (err)
 		goto put_user_pages;
 
@@ -990,4 +1000,45 @@ int nvmap_ioctl_query_heap_params(struct file *filp, void __user *arg)
 		ret = -EFAULT;
 exit:
 	return ret;
+}
+
+int nvmap_ioctl_query_handle_parameters(struct file *filp, void __user *arg)
+{
+	struct nvmap_handle_parameters op;
+	struct nvmap_handle *handle;
+
+	if (copy_from_user(&op, arg, sizeof(op)))
+		return -EFAULT;
+
+	handle = nvmap_handle_get_from_fd(op.handle);
+	if (handle == NULL)
+		goto exit;
+
+	if (!handle->alloc)
+		op.heap = 0;
+	else
+		op.heap = handle->heap_type;
+
+	/* heap_number, only valid for IVM carveout */
+	op.heap_number = handle->peer;
+
+	op.size = handle->size;
+
+	if (handle->userflags & NVMAP_HANDLE_PHYS_CONTIG)
+		op.contig = 1U;
+	else
+		op.contig = 0U;
+
+	op.align = handle->align;
+
+	op.coherency = handle->flags;
+
+	nvmap_handle_put(handle);
+
+	if (copy_to_user(arg, &op, sizeof(op)))
+		return -EFAULT;
+	return 0;
+
+exit:
+	return -ENODEV;
 }

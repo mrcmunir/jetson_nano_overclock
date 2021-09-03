@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -385,6 +385,7 @@ void adspff_fwrite(void)
 				(msgq_message_t *)&message);
 	if (ret < 0) {
 		pr_err("fwrite Dequeue failed %d.", ret);
+		kfree(msg_recv);
 		return;
 	}
 
@@ -512,7 +513,7 @@ send_ack:
 
 
 static const struct sched_param param = {
-	.sched_priority = 1,
+	.sched_priority = MAX_RT_PRIO - 1,
 };
 static struct task_struct *adspff_kthread;
 static struct list_head adspff_kthread_msgq_head;

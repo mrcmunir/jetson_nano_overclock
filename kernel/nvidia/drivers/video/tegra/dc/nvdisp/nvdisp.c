@@ -1,7 +1,7 @@
 /*
  * drivers/video/tegra/dc/nvdisplay/nvdisp.c
  *
- * Copyright (c) 2014-2019, NVIDIA CORPORATION, All rights reserved.
+ * Copyright (c) 2014-2021, NVIDIA CORPORATION, All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -3627,6 +3627,11 @@ static struct tegra_nvdisp_imp_settings *cpy_from_ext_imp_settings_v2(
 
 	nvdisp_settings->global_entries = ext_settings->global_settings.entries;
 	for (i = 0; i < num_heads; i++) {
+		if (ext_heads[i].num_wins < 1 || ext_heads[i].num_wins > DC_N_WINDOWS) {
+			pr_err("Wrong number of displays");
+			goto cpy_imp_v2_ret;
+		}
+
 		ret = cpy_from_ext_imp_head_v2(&ext_heads[i],
 					&nvdisp_settings->head_settings[i]);
 		if (ret) {
@@ -3729,7 +3734,10 @@ int tegra_dc_queue_imp_propose(struct tegra_dc *dc,
 		dev_err(&dc->ndev->dev,
 			"Failed to copy IMP session id back to user\n");
 		mutex_unlock(&tegra_nvdisp_lock);
-		dealloc_imp_settings(nvdisp_settings);
+		if (nvdisp_settings->num_heads > 0)
+			dealloc_imp_settings(nvdisp_settings);
+		else
+			dev_err(&dc->ndev->dev, "num heads is not a positive integer\n");
 
 		return -EFAULT;
 	}
@@ -4538,6 +4546,11 @@ void tegra_nvdisp_activate_general_channel(struct tegra_dc *dc)
 	tegra_dc_readl(dc, nvdisp_cmd_state_ctrl_r()); /* flush */
 }
 
+static struct tegra_dc_sor_info t18x_sor_info[] = {
+	{ .hdcp_supported = true },   /* SOR0 */
+	{ .hdcp_supported = true },   /* SOR1 */
+};
+
 void tegra_dc_populate_t18x_hw_data(struct tegra_dc_hw_data *hw_data)
 {
 	if (!hw_data)
@@ -4546,6 +4559,7 @@ void tegra_dc_populate_t18x_hw_data(struct tegra_dc_hw_data *hw_data)
 	hw_data->nheads = 3;
 	hw_data->nwins = 6;
 	hw_data->nsors = 2;
+	hw_data->sor_info = t18x_sor_info;
 	hw_data->pd_table = &t18x_disp_pd_table;
 	hw_data->valid = true;
 	hw_data->version = TEGRA_DC_HW_T18x;

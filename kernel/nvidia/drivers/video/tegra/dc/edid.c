@@ -4,7 +4,7 @@
  * Copyright (C) 2010 Google, Inc.
  * Author: Erik Gilling <konkers@android.com>
  *
- * Copyright (c) 2010-2019, NVIDIA CORPORATION, All rights reserved.
+ * Copyright (c) 2010-2021, NVIDIA CORPORATION, All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -847,7 +847,7 @@ int tegra_edid_get_monspecs(struct tegra_edid *edid, struct fb_monspecs *specs)
 						FB_VMODE_STEREO_FRAME_PACK;
 				}
 			}
-		} else if (data[i * EDID_BYTES_PER_BLOCK] == 0x70) {
+		} else if (data[i * EDID_BYTES_PER_BLOCK] == 0x70 && specs->modedb) {
 			tegra_edid_disp_id_ext_block_parse(
 				data + i * EDID_BYTES_PER_BLOCK, specs,
 				new_data);
@@ -925,8 +925,15 @@ int tegra_edid_get_monspecs(struct tegra_edid *edid, struct fb_monspecs *specs)
 	for (j = 0; j < specs->modedb_len; j++) {
 		if (!new_data->rgb_quant_selectable &&
 		    !(specs->modedb[j].vmode & FB_VMODE_SET_YUV_MASK))
-			specs->modedb[j].vmode |= FB_VMODE_LIMITED_RANGE;
-
+			/*
+			 * Follow HDMI 2.0 specification (section 7.3) to
+			 * select color range.
+			 */
+			if (specs->modedb[j].vmode & FB_VMODE_IS_CEA &&
+				!(specs->modedb[j].xres == 640 &&
+				specs->modedb[j].yres == 480))
+				specs->modedb[j].vmode |= FB_VMODE_LIMITED_RANGE;
+		/* TODO: add color range selection for YUV mode. */
 		if (!new_data->yuv_quant_selectable &&
 		    (specs->modedb[j].vmode & FB_VMODE_SET_YUV_MASK))
 			specs->modedb[j].vmode |= FB_VMODE_LIMITED_RANGE;

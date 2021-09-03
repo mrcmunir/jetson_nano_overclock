@@ -1,9 +1,11 @@
+# shellcheck disable=SC2148
 #
-# Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2019-2020, NVIDIA CORPORATION. All rights reserved.
 #
 
 # Function to check if variable is defined.
 function check_vars {
+	# shellcheck disable=SC2124
 	variables=${@}
 	for variable in ${variables} ; do
 		if [ -z "${!variable}" ]; then
@@ -23,16 +25,19 @@ function check_env_common {
 			exit 1
 		fi
 	fi
+	# shellcheck disable=SC2046,SC2235
 	if [ "${MAKE_BIN}" != "make" ] && \
 		( [ ! -f "${MAKE_BIN}" ] || \
 		[ ! -f $(basename "${MAKE_BIN}") ] ); then
 		echo "Error: ${MAKE_BIN} does not exist !!"
+		# shellcheck disable=SC2140
 		echo "Set MAKE_BIN env variable to "make" binary"
 		exit 1
 	fi
 }
 
 
+# shellcheck disable=SC2034
 NPROC=$(nproc)
 MAKE_BIN="${MAKE_BIN:-make}"
 BUILD_DIR="${BUILD_DIR:-$(pwd)/build_nv_sources}"

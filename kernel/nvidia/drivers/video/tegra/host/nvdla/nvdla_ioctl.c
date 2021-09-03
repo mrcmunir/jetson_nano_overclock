@@ -1,7 +1,7 @@
 /*
  * NVDLA IOCTL for T194
  *
- * Copyright (c) 2016-2019, NVIDIA Corporation.  All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA Corporation.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -167,7 +167,7 @@ fail_to_send_fence:
 
 static int nvdla_pin(struct nvdla_private *priv, void *arg)
 {
-	u32 handles[MAX_NVDLA_PIN_BUFFERS];
+	struct nvdla_mem_share_handle handles[MAX_NVDLA_PIN_BUFFERS];
 	struct dma_buf *dmabufs[MAX_NVDLA_PIN_BUFFERS];
 	int err = 0;
 	int i = 0;
@@ -177,6 +177,12 @@ static int nvdla_pin(struct nvdla_private *priv, void *arg)
 	struct platform_device *pdev = priv->pdev;
 
 	nvdla_dbg_fn(pdev, "");
+
+	if (!nvdla_buffer_is_valid(priv->buffers)) {
+		nvdla_dbg_err(pdev, "Invalid buffer\n");
+		err = -EINVAL;
+		goto fail_to_get_val_arg;
+	}
 
 	if (!buf_list) {
 		nvdla_dbg_err(pdev, "Invalid argument ptr in pin\n");
@@ -194,14 +200,14 @@ static int nvdla_pin(struct nvdla_private *priv, void *arg)
 	nvdla_dbg_info(pdev, "num of buffers [%d]", count);
 
 	if (copy_from_user(handles, (void __user *)buf_list->buffers,
-			(count * sizeof(u32)))) {
+			(count * sizeof(struct nvdla_mem_share_handle)))) {
 		err = -EFAULT;
 		goto nvdla_buffer_cpy_err;
 	}
 
 	/* get the dmabuf pointer from the fd handle */
 	for (i = 0; i < count; i++) {
-		dmabufs[i] = dma_buf_get(handles[i]);
+		dmabufs[i] = dma_buf_get(handles[i].share_id);
 		if (IS_ERR_OR_NULL(dmabufs[i])) {
 			err = -EFAULT;
 			goto fail_to_get_dma_buf;
@@ -222,7 +228,7 @@ fail_to_get_val_arg:
 
 static int nvdla_unpin(struct nvdla_private *priv, void *arg)
 {
-	u32 handles[MAX_NVDLA_PIN_BUFFERS];
+	struct nvdla_mem_share_handle handles[MAX_NVDLA_PIN_BUFFERS];
 	struct dma_buf *dmabufs[MAX_NVDLA_PIN_BUFFERS];
 	int err = 0;
 	int i = 0;
@@ -232,6 +238,12 @@ static int nvdla_unpin(struct nvdla_private *priv, void *arg)
 	struct platform_device *pdev = priv->pdev;
 
 	nvdla_dbg_fn(pdev, "");
+
+	if (!nvdla_buffer_is_valid(priv->buffers)) {
+		nvdla_dbg_err(pdev, "Invalid buffer\n");
+		err = -EINVAL;
+		goto fail_to_get_val_arg;
+	}
 
 	if (!buf_list) {
 		nvdla_dbg_err(pdev, "Invalid argument for pointer\n");
@@ -249,14 +261,14 @@ static int nvdla_unpin(struct nvdla_private *priv, void *arg)
 	nvdla_dbg_info(pdev, "num of buffers [%d]", count);
 
 	if (copy_from_user(handles, (void __user *)buf_list->buffers,
-		(count * sizeof(u32)))) {
+		(count * sizeof(struct nvdla_mem_share_handle)))) {
 		err = -EFAULT;
 		goto nvdla_buffer_cpy_err;
 	}
 
 	/* get the dmabuf pointer and clean valid ones */
 	for (i = 0; i < count; i++) {
-		dmabufs[i] = dma_buf_get(handles[i]);
+		dmabufs[i] = dma_buf_get(handles[i].share_id);
 		if (IS_ERR_OR_NULL(dmabufs[i]))
 			continue;
 	}
@@ -620,6 +632,10 @@ static int nvdla_update_signal_fences(struct nvdla_task *task,
 	nvdla_dbg_info(dla_pdev, "postfences copied for user");
 
 fail:
+	/**
+	 * TODO: Unmap task memory in event of failure.
+	 *  Defering the fix since this is rare failure to encounter.
+	 **/
 	return err;
 }
 
@@ -697,7 +713,6 @@ static int nvdla_fill_task(struct nvdla_queue *queue,
 	nvdla_dbg_fn(pdev, "");
 
 	 /* initialize task parameters */
-	kref_init(&task->ref);
 	task->queue = queue;
 	task->buffers = buffers;
 	task->sp = &nvhost_get_host(pdev)->syncpt;
@@ -930,6 +945,70 @@ exit:
 	return 0;
 }
 
+static int nvdla_queue_alloc_handler(struct nvdla_private *priv, void *arg)
+{
+	int err = 0;
+	struct platform_device *pdev = priv->pdev;
+	struct nvhost_device_data *pdata = platform_get_drvdata(pdev);
+	struct nvdla_device *nvdla_dev = pdata->private_data;
+
+	/* Currently unused and kept to be consistent with other handlers. */
+	(void) arg;
+
+	/* If queue is already allocated, error out. */
+	if (unlikely(NULL != priv->queue)) {
+		nvdla_dbg_err(pdev, "Queue already allocated");
+		err = -EINVAL;
+		goto fail;
+	}
+
+	/* Allocate the queue */
+	priv->queue = nvdla_queue_alloc(nvdla_dev->pool, MAX_NVDLA_TASK_COUNT,
+					nvdla_dev->submit_mode == NVDLA_SUBMIT_MODE_CHANNEL);
+	if (IS_ERR(priv->queue)) {
+		err = PTR_ERR(priv->queue);
+		priv->queue = NULL;
+		goto fail;
+	}
+
+	/* Set nvdla_buffers platform device */
+	nvdla_buffer_set_platform_device(priv->buffers, priv->queue->vm_pdev);
+
+fail:
+	return err;
+}
+
+static int nvdla_queue_release_handler(struct nvdla_private *priv, void *arg)
+{
+	int err = 0;
+	struct platform_device *pdev = priv->pdev;
+
+	/**
+	 * Note: This functiona shall be reached directly either
+	 * [1] NVDLA_IOCTL_RELEASE_QUEUE ioctl call.
+	 * [2] when fd is closed before releasing the queue.
+	 **/
+
+	/* Currently unused and kept to be consistent with other handlers. */
+	(void) arg;
+
+	/* If no queue is allocated, error out. */
+	if (unlikely(NULL == priv->queue)) {
+		nvdla_dbg_err(pdev, "No queue to be released.");
+		err = -EINVAL;
+		goto fail;
+	}
+
+	/* Release the queue */
+	(void) nvdla_queue_abort(priv->queue);
+	nvdla_queue_put(priv->queue);
+
+	priv->queue = NULL;
+fail:
+	return err;
+}
+
+
 static int nvdla_submit(struct nvdla_private *priv, void *arg)
 {
 	struct nvdla_submit_args *args =
@@ -940,7 +1019,7 @@ static int nvdla_submit(struct nvdla_private *priv, void *arg)
 	struct nvdla_queue *queue;
 	struct nvdla_buffers *buffers;
 	u32 num_tasks;
-	struct nvdla_task *task;
+	struct nvdla_task *task = NULL; // task under submission
 	int err = 0, i = 0;
 
 	if (!args || !priv)
@@ -974,7 +1053,6 @@ static int nvdla_submit(struct nvdla_private *priv, void *arg)
 	nvdla_dbg_info(pdev, "copy of user tasks done");
 
 	for (i = 0; i < num_tasks; i++) {
-
 		nvdla_dbg_info(pdev, "submit [%d]th task", i + 1);
 
 		err = nvdla_get_task_mem(queue, &task);
@@ -984,11 +1062,13 @@ static int nvdla_submit(struct nvdla_private *priv, void *arg)
 		}
 		nvdla_dbg_info(pdev, "task[%d] mem allocate done", i + 1);
 
+		/* Initialize ref for task submit preparation */
+		kref_init(&task->ref);
+
 		/* fill local task param from user args */
 		err = nvdla_fill_task(queue, buffers, local_tasks + i, task);
 		if (err) {
 			nvdla_dbg_err(pdev, "failed to fill task[%d]", i + 1);
-			kref_put(&task->ref, task_free);
 			goto fail_to_fill_task;
 		}
 		nvdla_dbg_info(pdev, "local task[%d] filled", i + 1);
@@ -1034,11 +1114,22 @@ static int nvdla_submit(struct nvdla_private *priv, void *arg)
 
 	return 0;
 
+/**
+ * Note:
+ * Any failures during a task submit preparation,
+ * 1. shall not affect previous tasks within this submit that has been
+ *    successfully submitted.
+ * 2. shall abandon consecutive tasks within this submit.
+ **/
 fail_to_submit_task:
 fail_to_update_postfences:
 fail_to_get_fences:
 fail_to_fill_task_desc:
 fail_to_fill_task:
+	/* Remove ref corresponding task submit preparation */
+	if (task != NULL)
+		kref_put(&task->ref, task_free);
+
 	/*TODO: traverse list in reverse and delete jobs */
 fail_to_get_task_mem:
 fail_to_copy_task:
@@ -1097,6 +1188,12 @@ static long nvdla_ioctl(struct file *file, unsigned int cmd,
 	case NVDLA_IOCTL_EMU_TASK_SUBMIT:
 		err = nvdla_emu_task_submit(priv, (void *)buf);
 		break;
+	case NVDLA_IOCTL_ALLOC_QUEUE:
+		err = nvdla_queue_alloc_handler(priv, (void*)buf);
+		break;
+	case NVDLA_IOCTL_RELEASE_QUEUE:
+		err = nvdla_queue_release_handler(priv, (void*)buf);
+		break;
 	default:
 		nvdla_dbg_err(pdev, "invalid IOCTL CMD");
 		err = -ENOIOCTLCMD;
@@ -1115,7 +1212,6 @@ static int nvdla_open(struct inode *inode, struct file *file)
 	struct nvhost_device_data *pdata = container_of(inode->i_cdev,
 					struct nvhost_device_data, ctrl_cdev);
 	struct platform_device *pdev = pdata->pdev;
-	struct nvdla_device *nvdla_dev = pdata->private_data;
 	struct nvdla_private *priv;
 	int err = 0, index;
 
@@ -1146,20 +1242,19 @@ static int nvdla_open(struct inode *inode, struct file *file)
 			err = nvhost_module_set_rate(pdev, priv, UINT_MAX,
 				index, clock->bwmgr_request_type);
 			if (err < 0)
-				goto err_alloc_queue;
+				goto err_set_emc_rate;
 			break;
 		}
 	}
 
-	priv->queue = nvdla_queue_alloc(nvdla_dev->pool,
-		MAX_NVDLA_TASK_COUNT,
-		nvdla_dev->submit_mode == NVDLA_SUBMIT_MODE_CHANNEL);
-	if (IS_ERR(priv->queue)) {
-		err = PTR_ERR(priv->queue);
-		goto err_alloc_queue;
-	}
+	/* Zero out explicitly */
+	priv->queue = NULL;
 
-	priv->buffers = nvdla_buffer_init(priv->queue->vm_pdev);
+	/**
+	 * Platform device corresponding to buffers is deferred
+	 * to queue allocation.
+	 **/
+	priv->buffers = nvdla_buffer_init(NULL);
 	if (IS_ERR(priv->buffers)) {
 		err = PTR_ERR(priv->buffers);
 		goto err_alloc_buffer;
@@ -1169,7 +1264,7 @@ static int nvdla_open(struct inode *inode, struct file *file)
 
 err_alloc_buffer:
 	kfree(priv->buffers);
-err_alloc_queue:
+err_set_emc_rate:
 	nvhost_module_remove_client(pdev, priv);
 err_add_client:
 	kfree(priv);
@@ -1184,8 +1279,16 @@ static int nvdla_release(struct inode *inode, struct file *file)
 
 	nvdla_dbg_fn(pdev, "priv:%p", priv);
 
-	nvdla_queue_abort(priv->queue);
-	nvdla_queue_put(priv->queue);
+	/* If NVDLA_IOCTL_RELEASE_QUEUE is not called, free it explicitly. */
+	if (NULL != priv->queue) {
+		/**
+		 * Error value is intentionally ignored to continue freeing
+		 * other resources.
+		 * arg is set to NULL and should work since they are unused.
+		 **/
+		nvdla_queue_release_handler(priv, NULL);
+	}
+
 	nvdla_buffer_release(priv->buffers);
 	nvhost_module_remove_client(pdev, priv);
 

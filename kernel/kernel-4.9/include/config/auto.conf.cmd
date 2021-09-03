@@ -1,12 +1,12 @@
 deps_config := \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/arch/arm64/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/arch/arm64/Kconfig \
 	lib/fonts/Kconfig \
 	lib/xz/Kconfig \
 	lib/Kconfig \
 	arch/arm64/crypto/Kconfig \
 	certs/Kconfig \
 	crypto/asymmetric_keys/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/crypto/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/crypto/Kconfig \
 	drivers/crypto/chelsio/Kconfig \
 	drivers/crypto/vmx/Kconfig \
 	drivers/crypto/qat/Kconfig \
@@ -17,8 +17,8 @@ deps_config := \
 	drivers/crypto/Kconfig \
 	crypto/async_tx/Kconfig \
 	crypto/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/security/tlk_driver/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/security/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/security/tlk_driver/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/security/Kconfig \
 	security/integrity/evm/Kconfig \
 	security/integrity/ima/Kconfig \
 	security/integrity/Kconfig \
@@ -118,23 +118,23 @@ deps_config := \
 	drivers/acpi/apei/Kconfig \
 	drivers/acpi/nfit/Kconfig \
 	drivers/acpi/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/firmware/tegra/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/firmware/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/firmware/tegra/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/firmware/Kconfig \
 	drivers/firmware/meson/Kconfig \
 	drivers/firmware/efi/Kconfig \
 	drivers/firmware/google/Kconfig \
 	drivers/firmware/broadcom/Kconfig \
 	drivers/firmware/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvgpu/drivers/gpu/nvgpu/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvgpu/drivers/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/virt/tegra/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/trusty/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/nvpps/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/nvlink/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/nvpmodel/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/misc/tegra186-ahc/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/bluetooth/realtek/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvgpu/drivers/gpu/nvgpu/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvgpu/drivers/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/virt/tegra/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/trusty/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/nvpps/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/nvlink/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/nvpmodel/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/misc/tegra186-ahc/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/bluetooth/realtek/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/Kconfig \
 	drivers/tee/optee/Kconfig \
 	drivers/tee/Kconfig \
 	drivers/fpga/Kconfig \
@@ -145,13 +145,13 @@ deps_config := \
 	drivers/nvdimm/Kconfig \
 	drivers/android/Kconfig \
 	drivers/thunderbolt/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/ras/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/ras/Kconfig \
 	arch/x86/ras/Kconfig \
 	drivers/ras/Kconfig \
 	drivers/perf/Kconfig \
 	drivers/mcb/Kconfig \
 	drivers/powercap/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/phy/tegra/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/phy/tegra/Kconfig \
 	drivers/phy/tegra/Kconfig \
 	drivers/phy/Kconfig \
 	drivers/fmc/Kconfig \
@@ -172,30 +172,31 @@ deps_config := \
 	drivers/ntb/hw/amd/Kconfig \
 	drivers/ntb/hw/Kconfig \
 	drivers/ntb/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/generic/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/generic/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/temperature/Kconfig \
 	drivers/iio/temperature/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/proximity/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/proximity/Kconfig \
 	drivers/iio/proximity/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/pressure/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/pressure/Kconfig \
 	drivers/iio/pressure/Kconfig \
 	drivers/iio/potentiometer/Kconfig \
 	drivers/iio/trigger/Kconfig \
 	drivers/iio/orientation/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/magnetometer/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/magnetometer/Kconfig \
 	drivers/iio/magnetometer/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/light/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/light/Kconfig \
 	drivers/iio/light/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/imu/tsfw_icm20628/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/imu/nvs_bmi/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/imu/nvi_mpu/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/imu/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/imu/tsfw_icm20628/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/imu/nvs_bmi/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/imu/nvi_mpu/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/imu/Kconfig \
 	drivers/iio/imu/inv_mpu6050/Kconfig \
 	drivers/iio/imu/bmi160/Kconfig \
 	drivers/iio/imu/Kconfig \
 	drivers/iio/humidity/Kconfig \
 	drivers/iio/health/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/gyro/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/gyro/Kconfig \
 	drivers/iio/gyro/Kconfig \
 	drivers/iio/frequency/Kconfig \
 	drivers/iio/dummy/Kconfig \
@@ -208,22 +209,22 @@ deps_config := \
 	drivers/iio/chemical/Kconfig \
 	drivers/iio/amplifiers/Kconfig \
 	drivers/iio/adc/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iio/accel/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iio/accel/Kconfig \
 	drivers/iio/accel/Kconfig \
 	drivers/iio/buffer/Kconfig \
 	drivers/iio/Kconfig \
 	drivers/memory/tegra/Kconfig \
 	drivers/memory/samsung/Kconfig \
 	drivers/memory/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/extcon/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/extcon/Kconfig \
 	drivers/extcon/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/devfreq/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/devfreq/Kconfig \
 	drivers/devfreq/event/Kconfig \
 	drivers/devfreq/Kconfig \
 	drivers/soc/versatile/Kconfig \
 	drivers/soc/ux500/Kconfig \
 	drivers/soc/ti/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/soc/tegra/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/soc/tegra/Kconfig \
 	drivers/soc/tegra/Kconfig \
 	drivers/soc/sunxi/Kconfig \
 	drivers/soc/samsung/Kconfig \
@@ -236,10 +237,10 @@ deps_config := \
 	drivers/soc/Kconfig \
 	drivers/rpmsg/Kconfig \
 	drivers/remoteproc/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/iommu/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/iommu/Kconfig \
 	drivers/iommu/Kconfig \
 	drivers/mailbox/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/clocksource/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/clocksource/Kconfig \
 	drivers/clocksource/Kconfig \
 	drivers/hwspinlock/Kconfig \
 	drivers/clk/uniphier/Kconfig \
@@ -256,18 +257,19 @@ deps_config := \
 	drivers/clk/bcm/Kconfig \
 	drivers/clk/versatile/Kconfig \
 	drivers/clk/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/platform/tegra/nvadsp/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/platform/tegra/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/platform/tegra/nvadsp/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/platform/tegra/Kconfig \
 	drivers/platform/tegra/Kconfig \
 	drivers/platform/chrome/Kconfig \
 	drivers/platform/goldfish/Kconfig \
 	drivers/platform/mips/Kconfig \
 	drivers/platform/x86/Kconfig \
 	drivers/platform/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/staging/platform/tegra/gte_test/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/staging/platform/tegra/gte/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/staging/ozwpan/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/staging/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/staging/platform/tegra/dummy_carveout/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/staging/platform/tegra/gte_test/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/staging/platform/tegra/gte/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/staging/ozwpan/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/staging/Kconfig \
 	drivers/staging/stepper/Kconfig \
 	drivers/staging/vc04_services/Kconfig \
 	drivers/staging/greybus/Kconfig \
@@ -307,7 +309,6 @@ deps_config := \
 	drivers/staging/fwserial/Kconfig \
 	drivers/staging/gdm724x/Kconfig \
 	drivers/staging/board/Kconfig \
-	drivers/staging/android/fiq_debugger/Kconfig \
 	drivers/staging/android/ion/hisilicon/Kconfig \
 	drivers/staging/android/ion/Kconfig \
 	drivers/staging/android/Kconfig \
@@ -328,7 +329,7 @@ deps_config := \
 	drivers/staging/sm750fb/Kconfig \
 	drivers/staging/iio/trigger/Kconfig \
 	drivers/staging/iio/resolver/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/staging/iio/meter/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/staging/iio/meter/Kconfig \
 	drivers/staging/iio/meter/Kconfig \
 	drivers/staging/iio/light/Kconfig \
 	drivers/staging/iio/impedance-analyzer/Kconfig \
@@ -368,7 +369,7 @@ deps_config := \
 	drivers/auxdisplay/Kconfig \
 	drivers/dca/Kconfig \
 	drivers/dma-buf/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/dma/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/dma/Kconfig \
 	drivers/dma/sh/Kconfig \
 	drivers/dma/hsu/Kconfig \
 	drivers/dma/dw/Kconfig \
@@ -400,7 +401,7 @@ deps_config := \
 	drivers/infiniband/Kconfig \
 	drivers/accessibility/Kconfig \
 	drivers/switch/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/leds/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/leds/Kconfig \
 	drivers/leds/trigger/Kconfig \
 	drivers/leds/Kconfig \
 	drivers/memstick/host/Kconfig \
@@ -437,15 +438,15 @@ deps_config := \
 	drivers/usb/mon/Kconfig \
 	drivers/usb/core/Kconfig \
 	drivers/usb/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/hid/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/hid/Kconfig \
 	drivers/hid/intel-ish-hid/Kconfig \
 	drivers/hid/i2c-hid/Kconfig \
 	drivers/hid/usbhid/Kconfig \
 	drivers/hid/Kconfig \
 	sound/oss/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/sound/soc/tegra-virt-alt/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/sound/soc/tegra-alt/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/sound/soc/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/sound/soc/tegra-virt-alt/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/sound/soc/tegra-alt/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/sound/soc/Kconfig \
 	sound/soc/generic/Kconfig \
 	sound/soc/codecs/tas2557/Kconfig \
 	sound/soc/codecs/Kconfig \
@@ -499,7 +500,7 @@ deps_config := \
 	sound/aoa/Kconfig \
 	sound/ppc/Kconfig \
 	sound/hda/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/sound/pci/hda/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/sound/pci/hda/Kconfig \
 	sound/pci/hda/Kconfig \
 	sound/pci/Kconfig \
 	sound/isa/Kconfig \
@@ -510,12 +511,12 @@ deps_config := \
 	sound/Kconfig \
 	drivers/video/logo/Kconfig \
 	drivers/video/console/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/video/tegra/nvmap/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/video/tegra/host/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/misc/tegra-cec/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/video/tegra/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/video/tegra/nvmap/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/video/tegra/host/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/misc/tegra-cec/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/video/tegra/Kconfig \
 	drivers/video/tegra/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/video/backlight/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/video/backlight/Kconfig \
 	drivers/video/backlight/Kconfig \
 	drivers/video/fbdev/mmp/fb/Kconfig \
 	drivers/video/fbdev/mmp/panel/Kconfig \
@@ -528,8 +529,8 @@ deps_config := \
 	drivers/video/fbdev/omap/Kconfig \
 	drivers/video/fbdev/geode/Kconfig \
 	drivers/video/fbdev/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/gpu/drm/tegra_udrm/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/gpu/drm/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/gpu/drm/tegra_udrm/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/gpu/drm/Kconfig \
 	drivers/gpu/drm/mediatek/Kconfig \
 	drivers/gpu/drm/hisilicon/kirin/Kconfig \
 	drivers/gpu/drm/hisilicon/Kconfig \
@@ -582,11 +583,11 @@ deps_config := \
 	drivers/video/Kconfig \
 	drivers/media/dvb-frontends/drx39xyj/Kconfig \
 	drivers/media/dvb-frontends/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/media/tuners/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/media/tuners/Kconfig \
 	drivers/media/tuners/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/media/spi/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/media/spi/Kconfig \
 	drivers/media/spi/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/media/i2c/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/media/i2c/Kconfig \
 	drivers/media/i2c/soc_camera/Kconfig \
 	drivers/media/i2c/smiapp/Kconfig \
 	drivers/media/i2c/m5mols/Kconfig \
@@ -604,10 +605,10 @@ deps_config := \
 	drivers/media/radio/Kconfig \
 	drivers/media/mmc/siano/Kconfig \
 	drivers/media/mmc/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/media/platform/tegra-vivid/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/media/platform/tegra/mipical/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/media/platform/tegra/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/media/platform/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/media/platform/tegra-vivid/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/media/platform/tegra/mipical/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/media/platform/tegra/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/media/platform/Kconfig \
 	drivers/media/platform/sti/c8sectpfe/Kconfig \
 	drivers/media/platform/vivid/Kconfig \
 	drivers/media/platform/atmel/Kconfig \
@@ -688,39 +689,39 @@ deps_config := \
 	drivers/media/dvb-core/Kconfig \
 	drivers/media/v4l2-core/Kconfig \
 	drivers/media/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/regulator/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/regulator/Kconfig \
 	drivers/regulator/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/mfd/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/mfd/Kconfig \
 	drivers/mfd/Kconfig \
 	drivers/bcma/Kconfig \
 	drivers/ssb/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/watchdog/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/watchdog/Kconfig \
 	drivers/watchdog/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/thermal/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/thermal/Kconfig \
 	drivers/thermal/qcom/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/thermal/tegra/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/thermal/tegra/Kconfig \
 	drivers/thermal/tegra/Kconfig \
 	drivers/thermal/st/Kconfig \
 	drivers/thermal/samsung/Kconfig \
 	drivers/thermal/ti-soc-thermal/Kconfig \
 	drivers/thermal/int340x_thermal/Kconfig \
 	drivers/thermal/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/hwmon/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/hwmon/Kconfig \
 	drivers/hwmon/pmbus/Kconfig \
 	drivers/hwmon/Kconfig \
 	drivers/power/supply/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/power/reset/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/power/reset/Kconfig \
 	drivers/power/reset/Kconfig \
 	drivers/power/avs/Kconfig \
 	drivers/power/Kconfig \
 	drivers/w1/slaves/Kconfig \
 	drivers/w1/masters/Kconfig \
 	drivers/w1/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/padctrl/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/padctrl/Kconfig \
 	drivers/padctrl/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/gpio/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/gpio/Kconfig \
 	drivers/gpio/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/pinctrl/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/pinctrl/Kconfig \
 	drivers/pinctrl/mediatek/Kconfig \
 	drivers/pinctrl/vt8500/Kconfig \
 	drivers/pinctrl/uniphier/Kconfig \
@@ -748,14 +749,14 @@ deps_config := \
 	drivers/hsi/controllers/Kconfig \
 	drivers/hsi/Kconfig \
 	drivers/spmi/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/spi/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/spi/Kconfig \
 	drivers/spi/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/i2c/busses/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/i2c/busses/Kconfig \
 	drivers/i2c/busses/Kconfig \
 	drivers/i2c/algos/Kconfig \
 	drivers/i2c/muxes/Kconfig \
 	drivers/i2c/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/char/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/char/Kconfig \
 	drivers/char/xillybus/Kconfig \
 	drivers/s390/char/Kconfig \
 	drivers/char/tpm/st33zp24/Kconfig \
@@ -764,23 +765,23 @@ deps_config := \
 	drivers/char/hw_random/Kconfig \
 	drivers/char/ipmi/Kconfig \
 	drivers/tty/hvc/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/tty/serial/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/tty/serial/Kconfig \
 	drivers/tty/serial/8250/Kconfig \
 	drivers/tty/serial/Kconfig \
 	drivers/tty/Kconfig \
 	drivers/char/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/input/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/input/Kconfig \
 	drivers/input/gameport/Kconfig \
 	drivers/input/serio/Kconfig \
 	drivers/input/rmi4/Kconfig \
 	drivers/input/misc/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/input/touchscreen/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/input/touchscreen/Kconfig \
 	drivers/input/touchscreen/Kconfig \
 	drivers/input/tablet/Kconfig \
 	drivers/input/joystick/iforce/Kconfig \
 	drivers/input/joystick/Kconfig \
 	drivers/input/mouse/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/input/keyboard/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/input/keyboard/Kconfig \
 	drivers/input/keyboard/Kconfig \
 	drivers/input/Kconfig \
 	drivers/lightnvm/Kconfig \
@@ -795,19 +796,21 @@ deps_config := \
 	drivers/isdn/hisax/Kconfig \
 	drivers/isdn/i4l/Kconfig \
 	drivers/isdn/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/Kconfig \
 	drivers/net/hyperv/Kconfig \
 	drivers/net/ieee802154/Kconfig \
 	drivers/net/wan/Kconfig \
 	drivers/net/wimax/i2400m/Kconfig \
 	drivers/net/wimax/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/wireless/realtek/rtl8822ce/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/wireless/realtek/rtl8821au/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/wireless/realtek/rtl8814au/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/wireless/realtek/rtl8812au/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/wireless/bcmdhd_pcie/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/wireless/bcmdhd/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/wireless/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/realtek/rtl8822ce/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/realtek/rtl8822bu/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/realtek/rtl8821cu/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/realtek/rtl8821au/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/realtek/rtl8814au/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/realtek/rtl8812au/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/bcmdhd_pcie/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/bcmdhd/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/wireless/Kconfig \
 	drivers/net/wireless/zydas/zd1211rw/Kconfig \
 	drivers/net/wireless/zydas/Kconfig \
 	drivers/net/wireless/ti/wlcore/Kconfig \
@@ -855,7 +858,7 @@ deps_config := \
 	drivers/net/wireless/ath/Kconfig \
 	drivers/net/wireless/admtek/Kconfig \
 	drivers/net/wireless/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/usb/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/usb/Kconfig \
 	drivers/net/usb/Kconfig \
 	drivers/s390/net/Kconfig \
 	drivers/net/slip/Kconfig \
@@ -864,7 +867,7 @@ deps_config := \
 	drivers/net/phy/Kconfig \
 	drivers/net/hippi/Kconfig \
 	drivers/net/fddi/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/ethernet/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/ethernet/Kconfig \
 	drivers/net/ethernet/xircom/Kconfig \
 	drivers/net/ethernet/xilinx/Kconfig \
 	drivers/net/ethernet/wiznet/Kconfig \
@@ -888,7 +891,7 @@ deps_config := \
 	drivers/net/ethernet/rocker/Kconfig \
 	drivers/net/ethernet/rdc/Kconfig \
 	drivers/net/ethernet/renesas/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/ethernet/realtek/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/ethernet/realtek/Kconfig \
 	drivers/net/ethernet/realtek/Kconfig \
 	drivers/net/ethernet/qualcomm/Kconfig \
 	drivers/net/ethernet/qlogic/Kconfig \
@@ -897,9 +900,9 @@ deps_config := \
 	drivers/net/ethernet/oki-semi/pch_gbe/Kconfig \
 	drivers/net/ethernet/oki-semi/Kconfig \
 	drivers/net/ethernet/nxp/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/ethernet/nvidia/pcie/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/ethernet/nvidia/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/ethernet/nvidia/eqos/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/ethernet/nvidia/pcie/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/ethernet/nvidia/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/ethernet/nvidia/eqos/Kconfig \
 	drivers/net/ethernet/nvidia/Kconfig \
 	drivers/net/ethernet/nuvoton/Kconfig \
 	drivers/net/ethernet/8390/Kconfig \
@@ -983,7 +986,7 @@ deps_config := \
 	drivers/md/persistent-data/Kconfig \
 	drivers/md/bcache/Kconfig \
 	drivers/md/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/ata/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/ata/Kconfig \
 	drivers/ata/Kconfig \
 	drivers/scsi/osd/Kconfig \
 	drivers/scsi/device_handler/Kconfig \
@@ -992,7 +995,7 @@ deps_config := \
 	drivers/scsi/arm/Kconfig \
 	drivers/scsi/qla4xxx/Kconfig \
 	drivers/scsi/qla2xxx/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/scsi/ufs/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/scsi/ufs/Kconfig \
 	drivers/scsi/ufs/Kconfig \
 	drivers/scsi/smartpqi/Kconfig \
 	drivers/scsi/mpt3sas/Kconfig \
@@ -1013,12 +1016,12 @@ deps_config := \
 	drivers/scsi/libsas/Kconfig \
 	drivers/scsi/Kconfig \
 	drivers/ide/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/misc/eventlib/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/misc/tegra-profiler/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/misc/nvs-aonsh/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/misc/nvs/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/misc/nvs-dfsh/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/misc/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/misc/eventlib/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/misc/tegra-profiler/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/misc/nvs-aonsh/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/misc/nvs/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/misc/nvs-dfsh/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/misc/Kconfig \
 	drivers/misc/inter-tegra/Kconfig \
 	drivers/misc/cxl/Kconfig \
 	drivers/misc/echo/Kconfig \
@@ -1037,7 +1040,7 @@ deps_config := \
 	drivers/nvme/target/Kconfig \
 	drivers/nvme/host/Kconfig \
 	drivers/nvme/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/block/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/block/Kconfig \
 	drivers/s390/block/Kconfig \
 	drivers/block/drbd/Kconfig \
 	drivers/block/zram/Kconfig \
@@ -1055,7 +1058,7 @@ deps_config := \
 	drivers/mtd/lpddr/Kconfig \
 	drivers/mtd/onenand/Kconfig \
 	drivers/mtd/nand/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/mtd/devices/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/mtd/devices/Kconfig \
 	drivers/mtd/devices/Kconfig \
 	drivers/mtd/maps/Kconfig \
 	drivers/mtd/chips/Kconfig \
@@ -1101,10 +1104,10 @@ deps_config := \
 	net/irda/irnet/Kconfig \
 	net/irda/irlan/Kconfig \
 	net/irda/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/can/nvsec/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/can/mttcan/ivc/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/can/mttcan/native/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/net/can/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/can/nvsec/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/can/mttcan/ivc/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/can/mttcan/native/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/net/can/Kconfig \
 	drivers/net/can/usb/Kconfig \
 	drivers/net/can/spi/Kconfig \
 	drivers/net/can/softing/Kconfig \
@@ -1175,7 +1178,7 @@ deps_config := \
 	drivers/cpufreq/Kconfig \
 	drivers/cpuidle/Kconfig.powerpc \
 	drivers/cpuidle/Kconfig.mips \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/cpuidle/Kconfig.arm \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/cpuidle/Kconfig.arm \
 	drivers/cpuidle/Kconfig.arm \
 	drivers/cpuidle/Kconfig \
 	kernel/power/Kconfig \
@@ -1183,14 +1186,14 @@ deps_config := \
 	mm/Kconfig \
 	kernel/Kconfig.hz \
 	kernel/Kconfig.preempt \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/pci/ep/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/pci/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/pci/endpoint/functions/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/pci/ep/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/pci/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/pci/endpoint/functions/Kconfig \
 	drivers/pci/endpoint/functions/Kconfig \
 	drivers/pci/endpoint/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/pci/host/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/pci/host/Kconfig \
 	drivers/pci/host/Kconfig \
-	/home/aresuser/Linux_for_Tegra/source/public/kernel/kernel/nvidia/drivers/pci/dwc/Kconfig \
+	/home/aresuser/Baixades/kernel/Linux_for_Tegra/source/src_out/kernel_src_build/kernel/nvidia/drivers/pci/dwc/Kconfig \
 	drivers/pci/dwc/Kconfig \
 	drivers/pci/hotplug/Kconfig \
 	drivers/pci/pcie/aer/Kconfig.debug \
@@ -1215,7 +1218,7 @@ deps_config := \
 include/config/auto.conf: \
 	$(deps_config)
 
-ifneq "$(KERNELVERSION)" "4.9.140"
+ifneq "$(KERNELVERSION)" "4.9.253"
 include/config/auto.conf: FORCE
 endif
 ifneq "$(ARCH)" "arm64"

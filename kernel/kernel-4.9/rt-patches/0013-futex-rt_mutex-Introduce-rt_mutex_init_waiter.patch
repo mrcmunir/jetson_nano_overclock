@@ -1,7 +1,7 @@
-From 4388d2973590b5d0414980309356e2451c5d4c2d Mon Sep 17 00:00:00 2001
+From 3bd0ccc9ec1a0dd33ff565450414e9b3c8d0a3cd Mon Sep 17 00:00:00 2001
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Wed, 22 Mar 2017 11:35:56 +0100
-Subject: [PATCH 013/352] futex,rt_mutex: Introduce rt_mutex_init_waiter()
+Subject: [PATCH 013/365] futex,rt_mutex: Introduce rt_mutex_init_waiter()
 
 Upstream commit 50809358dd7199aa7ce232f6877dd09ec30ef374
 
@@ -27,10 +27,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  3 files changed, 11 insertions(+), 7 deletions(-)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 802a2a0..600f7c3 100644
+index 8187c8a1acd2..1b696ea03735 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -3005,10 +3005,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3022,10 +3022,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  	 * The waiter is allocated on our stack, manipulated by the requeue
  	 * code while we sleep on uaddr.
  	 */
@@ -43,7 +43,7 @@ index 802a2a0..600f7c3 100644
  	ret = get_futex_key(uaddr2, flags & FLAGS_SHARED, &key2, VERIFY_WRITE);
  	if (unlikely(ret != 0))
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index c0639b5..d7dbce1 100644
+index de302c580d65..e1896ac74c37 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -1176,6 +1176,14 @@ void rt_mutex_adjust_pi(struct task_struct *task)
@@ -73,7 +73,7 @@ index c0639b5..d7dbce1 100644
  	/*
  	 * Technically we could use raw_spin_[un]lock_irq() here, but this can
 diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
-index d4d98c9..74b4cf2f 100644
+index 882d84eda50a..b550e9d86b1f 100644
 --- a/kernel/locking/rtmutex_common.h
 +++ b/kernel/locking/rtmutex_common.h
 @@ -104,6 +104,7 @@ extern void rt_mutex_init_proxy_locked(struct rt_mutex *lock,
@@ -85,5 +85,5 @@ index d4d98c9..74b4cf2f 100644
  				     struct rt_mutex_waiter *waiter,
  				     struct task_struct *task);
 -- 
-2.7.4
+2.28.0
 

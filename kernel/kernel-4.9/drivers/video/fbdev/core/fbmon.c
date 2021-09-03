@@ -2,7 +2,7 @@
  * linux/drivers/video/fbmon.c
  *
  * Copyright (C) 2002 James Simmons <jsimmons@users.sf.net>
- * Copyright (C) 2014-2018 NVIDIA CORPORATION. All rights reserved.
+ * Copyright (C) 2014-2020 NVIDIA CORPORATION. All rights reserved.
  *
  * Credits:
  *
@@ -980,6 +980,7 @@ void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 {
 	unsigned char *block;
 	int i, found = 0;
+	int cea_vic;
 
 	if (edid == NULL)
 		return;
@@ -1036,6 +1037,11 @@ void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 
 	if (!found)
 		specs->misc &= ~FB_MISC_1ST_DETAIL;
+
+	for (i = 0; i < specs->modedb_len; i++) {
+		cea_vic = fb_mode_find_cea(&specs->modedb[i]);
+		specs->modedb[i].vmode |= cea_vic ? FB_VMODE_IS_CEA : 0;
+	}
 
 	DPRINTK("========================================\n");
 }
@@ -1719,9 +1725,6 @@ int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var)
 void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 {
 }
-void fb_edid_add_monspecs(unsigned char *edid, struct fb_monspecs *specs)
-{
-}
 void fb_destroy_modedb(struct fb_videomode *modedb)
 {
 }
@@ -1829,7 +1832,6 @@ EXPORT_SYMBOL(fb_firmware_edid);
 
 EXPORT_SYMBOL(fb_parse_edid);
 EXPORT_SYMBOL(fb_edid_to_monspecs);
-EXPORT_SYMBOL(fb_edid_add_monspecs);
 EXPORT_SYMBOL(fb_get_mode);
 EXPORT_SYMBOL(fb_validate_mode);
 EXPORT_SYMBOL(fb_destroy_modedb);

@@ -140,7 +140,7 @@
 #define OFF_amba_id_mask 4 /* offsetof(struct amba_id, mask) */
 #define SIZE_mips_cdmm_device_id 1 /* sizeof(struct mips_cdmm_device_id) */
 #define OFF_mips_cdmm_device_id_type 0 /* offsetof(struct mips_cdmm_device_id, type) */
-#define SIZE_x86_cpu_id 16 /* sizeof(struct x86_cpu_id) */
+#define SIZE_x86_cpu_id 24 /* sizeof(struct x86_cpu_id) */
 #define OFF_x86_cpu_id_feature 6 /* offsetof(struct x86_cpu_id, feature) */
 #define OFF_x86_cpu_id_family 2 /* offsetof(struct x86_cpu_id, family) */
 #define OFF_x86_cpu_id_model 4 /* offsetof(struct x86_cpu_id, model) */

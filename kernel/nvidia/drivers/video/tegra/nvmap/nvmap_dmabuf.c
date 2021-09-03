@@ -464,6 +464,14 @@ int __nvmap_map(struct nvmap_handle *h, struct vm_area_struct *vma)
 	}
 
 	/*
+	 * If the handle is RO and RW mapping is requested, then
+	 * return error.
+	 */
+	if (h->from_va && h->is_ro && (vma->vm_flags & VM_WRITE)) {
+		nvmap_handle_put(h);
+		return -EPERM;
+	}
+	/*
 	 * Don't allow mmap on VPR memory as it would be mapped
 	 * as device memory. User space shouldn't be accessing
 	 * device memory.
@@ -599,14 +607,20 @@ EXPORT_SYMBOL(dmabuf_is_nvmap);
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0)
 static struct dma_buf *__dma_buf_export(struct nvmap_handle_info *info,
-					size_t size)
+					size_t size, bool ro_buf)
 {
 	DEFINE_DMA_BUF_EXPORT_INFO(exp_info);
 
 	exp_info.priv = info;
 	exp_info.ops = &nvmap_dma_buf_ops;
 	exp_info.size = size;
-	exp_info.flags = O_RDWR;
+
+	if (ro_buf) {
+		exp_info.flags = O_RDONLY;
+	} else {
+		exp_info.flags = O_RDWR;
+	}
+
 	exp_info.exp_flags = DMABUF_CAN_DEFER_UNMAP |
 				DMABUF_SKIP_CACHE_SYNC;
 
@@ -621,7 +635,7 @@ static struct dma_buf *__dma_buf_export(struct nvmap_handle_info *info,
  * Make a dmabuf object for an nvmap handle.
  */
 struct dma_buf *__nvmap_make_dmabuf(struct nvmap_client *client,
-				    struct nvmap_handle *handle)
+				    struct nvmap_handle *handle, bool ro_buf)
 {
 	int err;
 	struct dma_buf *dmabuf;
@@ -636,7 +650,7 @@ struct dma_buf *__nvmap_make_dmabuf(struct nvmap_client *client,
 	INIT_LIST_HEAD(&info->maps);
 	mutex_init(&info->maps_lock);
 
-	dmabuf = __dma_buf_export(info, handle->size);
+	dmabuf = __dma_buf_export(info, handle->size, ro_buf);
 	if (IS_ERR(dmabuf)) {
 		err = PTR_ERR(dmabuf);
 		goto err_export;
@@ -681,6 +695,7 @@ int nvmap_get_dmabuf_fd(struct nvmap_client *client, struct nvmap_handle *h)
 	dmabuf = __nvmap_dmabuf_export(client, h);
 	if (IS_ERR(dmabuf))
 		return PTR_ERR(dmabuf);
+
 	fd = __nvmap_dmabuf_fd(client, dmabuf, O_CLOEXEC);
 	if (IS_ERR_VALUE((uintptr_t)fd))
 		dma_buf_put(dmabuf);

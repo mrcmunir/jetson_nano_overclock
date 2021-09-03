@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2019-2020, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -30,6 +30,7 @@
 # Usage: ./${SCRIPT_NAME}.sh [OPTIONS]
 set -e
 
+# shellcheck disable=SC2046
 SCRIPT_DIR="$(dirname $(readlink -f "${0}"))"
 SCRIPT_NAME="$(basename "${0}")"
 
@@ -71,6 +72,7 @@ function build_arm64_kernel_sources {
 	kernel_version="${1}"
 	echo "Building kernel-${kernel_version} sources"
 
+	# shellcheck disable=SC2153
 	build_dir="${BUILD_DIR}/kernel_build"
 	rm -rf "${build_dir}"
 
@@ -79,6 +81,7 @@ function build_arm64_kernel_sources {
 	config_file="tegra_defconfig"
 	tegra_kernel_out="${source_dir}"
 
+	# shellcheck disable=SC2236
 	if [ ! -z "${KERNEL_OUT_DIR}" ] ; then
 		O_OPT=(-O "${KERNEL_OUT_DIR}")
 		tegra_kernel_out="${KERNEL_OUT_DIR}"
@@ -117,6 +120,7 @@ function build_arm64_kernel_sources {
 	echo "Kernel sources compiled successfully."
 }
 
+# shellcheck disable=SC2068
 parse_input_param $@
 
 # Compile kernel sources for "arm64"

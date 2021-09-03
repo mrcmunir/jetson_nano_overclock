@@ -1,7 +1,7 @@
 /*
  * GK20A Graphics
  *
- * Copyright (c) 2011-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2011-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -541,16 +541,11 @@ int gr_gk20a_ctx_wait_ucode(struct gk20a *g, u32 mailbox_id,
 	return 0;
 }
 
-/* The following is a less brittle way to call gr_gk20a_submit_fecs_method(...)
- * We should replace most, if not all, fecs method calls to this instead. */
-int gr_gk20a_submit_fecs_method_op(struct gk20a *g,
+int gr_gk20a_submit_fecs_method_op_locked(struct gk20a *g,
 				   struct fecs_method_op_gk20a op,
 				   bool sleepduringwait)
 {
-	struct gr_gk20a *gr = &g->gr;
 	int ret;
-
-	nvgpu_mutex_acquire(&gr->fecs_mutex);
 
 	if (op.mailbox.id != 0) {
 		gk20a_writel(g, gr_fecs_ctxsw_mailbox_r(op.mailbox.id),
@@ -578,6 +573,22 @@ int gr_gk20a_submit_fecs_method_op(struct gk20a *g,
 		nvgpu_err(g,"fecs method: data=0x%08x push adr=0x%08x",
 			op.method.data, op.method.addr);
 	}
+
+	return ret;
+}
+
+/* The following is a less brittle way to call gr_gk20a_submit_fecs_method(...)
+ * We should replace most, if not all, fecs method calls to this instead. */
+int gr_gk20a_submit_fecs_method_op(struct gk20a *g,
+				   struct fecs_method_op_gk20a op,
+				   bool sleepduringwait)
+{
+	struct gr_gk20a *gr = &g->gr;
+	int ret;
+
+	nvgpu_mutex_acquire(&gr->fecs_mutex);
+
+	ret = gr_gk20a_submit_fecs_method_op_locked(g, op, sleepduringwait);
 
 	nvgpu_mutex_release(&gr->fecs_mutex);
 
@@ -2486,6 +2497,16 @@ int gr_gk20a_load_ctxsw_ucode(struct gk20a *g)
 	return 0;
 }
 
+int gr_gk20a_set_fecs_watchdog_timeout(struct gk20a *g)
+{
+	gk20a_writel(g, gr_fecs_ctxsw_mailbox_clear_r(0), 0xffffffff);
+	gk20a_writel(g, gr_fecs_method_data_r(), 0x7fffffff);
+	gk20a_writel(g, gr_fecs_method_push_r(),
+		gr_fecs_method_push_adr_set_watchdog_timeout_f());
+
+	return 0;
+}
+
 static int gr_gk20a_wait_ctxsw_ready(struct gk20a *g)
 {
 	u32 ret;
@@ -2507,10 +2528,11 @@ static int gr_gk20a_wait_ctxsw_ready(struct gk20a *g)
 			gr_fecs_current_ctx_valid_false_f());
 	}
 
-	gk20a_writel(g, gr_fecs_ctxsw_mailbox_clear_r(0), 0xffffffff);
-	gk20a_writel(g, gr_fecs_method_data_r(), 0x7fffffff);
-	gk20a_writel(g, gr_fecs_method_push_r(),
-		     gr_fecs_method_push_adr_set_watchdog_timeout_f());
+	ret = g->ops.gr.set_fecs_watchdog_timeout(g);
+	if (ret) {
+		nvgpu_err(g, "fail to set watchdog timeout");
+		return ret;
+	}
 
 	nvgpu_log_fn(g, "done");
 	return 0;
@@ -3943,6 +3965,7 @@ int gr_gk20a_add_zbc(struct gk20a *g, struct gr_gk20a *gr,
 	/* no endian swap ? */
 
 	nvgpu_mutex_acquire(&gr->zbc_lock);
+	nvgpu_speculation_barrier();
 	switch (zbc_val->type) {
 	case GK20A_ZBC_TYPE_COLOR:
 		/* search existing tables */
@@ -4047,6 +4070,7 @@ int gr_gk20a_query_zbc(struct gk20a *g, struct gr_gk20a *gr,
 	u32 index = query_params->index_size;
 	u32 i;
 
+	nvgpu_speculation_barrier();
 	switch (query_params->type) {
 	case GK20A_ZBC_TYPE_INVALID:
 		query_params->index_size = GK20A_ZBC_TABLE_SIZE;
@@ -8827,6 +8851,10 @@ int gr_gk20a_wait_for_pause(struct gk20a *g, struct nvgpu_warpstate *w_state)
 	u32 gpc, tpc, sm, sm_id;
 	u32 global_mask;
 
+	if (!g->ops.gr.get_sm_no_lock_down_hww_global_esr_mask ||
+	    !g->ops.gr.lock_down_sm || !g->ops.gr.bpt_reg_info)
+		return -EINVAL;
+
 	/* Wait for the SMs to reach full stop. This condition is:
 	 * 1) All SMs with valid warps must be in the trap handler (SM_IN_TRAP_MODE)
 	 * 2) All SMs in the trap handler must have equivalent VALID and PAUSED warp
@@ -8883,6 +8911,9 @@ int gr_gk20a_clear_sm_errors(struct gk20a *g)
 	struct gr_gk20a *gr = &g->gr;
 	u32 global_esr;
 	u32 sm_per_tpc = nvgpu_get_litter_value(g, GPU_LIT_NUM_SM_PER_TPC);
+
+	if (!g->ops.gr.get_sm_hww_global_esr || !g->ops.gr.clear_sm_hww)
+		return -EINVAL;
 
 	for (gpc = 0; gpc < gr->gpc_count; gpc++) {
 

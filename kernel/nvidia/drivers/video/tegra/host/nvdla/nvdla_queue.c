@@ -88,11 +88,17 @@ int nvdla_get_task_mem(struct nvdla_queue *queue,
 	struct nvdla_task *task = NULL;
 	struct nvdla_queue_task_mem_info task_mem_info;
 	struct platform_device *pdev = queue->pool->pdev;
+	int n_retries = (NVDLA_TASK_MEM_AVAIL_TIMEOUT_MS /
+					NVDLA_TASK_MEM_AVAIL_RETRY_PERIOD);
 
 	nvdla_dbg_fn(pdev, "");
 
 	/* get mem task descriptor and task mem from task_mem_pool */
-	err = nvdla_queue_alloc_task_memory(queue, &task_mem_info);
+	do {
+		n_retries = n_retries - 1;
+		err = nvdla_queue_alloc_task_memory(queue, &task_mem_info);
+	} while ((n_retries > 0) && (err == -EAGAIN));
+
 	task = task_mem_info.kmem_addr;
 	if ((err < 0) || !task)
 		goto fail_to_assign_pool;
@@ -1235,14 +1241,22 @@ int nvdla_fill_task_desc(struct nvdla_task *task)
 	task->fence_counter = 0;
 
 	/* fill pre actions */
-	nvdla_fill_preactions(task);
+	err = nvdla_fill_preactions(task);
+	if (err != 0) {
+		nvdla_dbg_err(pdev, "fail to fill preactions");
+		goto fail_to_map_mem;
+	}
 
 	/* fill post actions */
-	nvdla_fill_postactions(task);
+	err = nvdla_fill_postactions(task);
+	if (err != 0) {
+		nvdla_dbg_err(pdev, "fail to fill postactions");
+		goto fail_to_map_mem;
+	}
 
 	/* ping user memory before submit to engine */
 	err = nvdla_map_task_memory(task);
-	if (err) {
+	if (err != 0) {
 		nvdla_dbg_err(pdev, "fail to pin mem");
 		goto fail_to_map_mem;
 	}
@@ -1252,6 +1266,7 @@ int nvdla_fill_task_desc(struct nvdla_task *task)
 	return 0;
 
 fail_to_map_mem:
+	(void) nvdla_unmap_task_memory(task);
 	return err;
 }
 
@@ -1443,9 +1458,6 @@ int nvdla_get_signal_fences(struct nvdla_queue *queue, void *in_task)
 
 	nvdla_dbg_fn(pdev, "");
 
-	/* get task ref */
-	nvdla_task_get(task);
-
 	if (task->fence_counter == 0)
 		task->fence_counter = 1;
 
@@ -1511,6 +1523,9 @@ static int nvdla_queue_submit_op(struct nvdla_queue *queue, void *in_task)
 	nvdla_dbg_fn(pdev, "");
 
 	mutex_lock(&queue->list_lock);
+
+	/* Get a reference before registration or submission */
+	nvdla_task_get(task);
 
 	/* get fence from nvhost for MMIO mode*/
 	if (nvdla_dev->submit_mode == NVDLA_SUBMIT_MODE_MMIO) {
@@ -1580,8 +1595,10 @@ static int nvdla_queue_submit_op(struct nvdla_queue *queue, void *in_task)
 		err = nvdla_send_cmd(pdev, &cmd_data);
 		if (err) {
 			nvdla_dbg_err(pdev, "task[%p] submit failed", task);
-			nvdla_task_syncpt_reset(task->sp, queue->syncpt_id,
-					task->fence);
+			/* deletes invalid task from queue, puts refs */
+			nvdla_task_syncpt_reset(task->sp,
+				queue->syncpt_id,
+				task->fence);
 		}
 	}
 
@@ -1608,6 +1625,7 @@ fail_to_register:
 fail_to_channel_submit:
 	nvhost_module_idle(pdev);
 fail_to_poweron:
+	nvdla_task_free_locked(task);
 	mutex_unlock(&queue->list_lock);
 
 	return err;

@@ -1,7 +1,7 @@
 /*
  * GK20A Graphics Engine
  *
- * Copyright (c) 2011-2018, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2011-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -602,7 +602,7 @@ u32 gk20a_gr_get_sm_no_lock_down_hww_global_esr_mask(struct gk20a *g);
 		if (g->support_pmu) {\
 			err = nvgpu_pg_elpg_disable(g);\
 			if (err != 0) {\
-				err = nvgpu_pg_elpg_enable(g); \
+				(void)nvgpu_pg_elpg_enable(g); \
 			} \
 		} \
 		if (err == 0) { \
@@ -700,6 +700,9 @@ int gr_gk20a_handle_tex_exception(struct gk20a *g, u32 gpc, u32 tpc,
 					bool *post_event);
 int gr_gk20a_init_ctx_state(struct gk20a *g);
 int gr_gk20a_submit_fecs_method_op(struct gk20a *g,
+				   struct fecs_method_op_gk20a op,
+				   bool sleepduringwait);
+int gr_gk20a_submit_fecs_method_op_locked(struct gk20a *g,
 				   struct fecs_method_op_gk20a op,
 				   bool sleepduringwait);
 int gr_gk20a_submit_fecs_sideband_method_op(struct gk20a *g,
@@ -844,4 +847,5 @@ void gk20a_gr_destroy_ctx_buffer(struct gk20a *g,
 int gk20a_gr_alloc_ctx_buffer(struct gk20a *g,
 	struct gr_ctx_buffer_desc *desc, size_t size);
 void gk20a_gr_flush_channel_tlb(struct gr_gk20a *gr);
+int gr_gk20a_set_fecs_watchdog_timeout(struct gk20a *g);
 #endif /*__GR_GK20A_H__*/

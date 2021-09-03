@@ -1,7 +1,7 @@
 /*
  * tegra_asoc_machine_alt.c - Tegra xbar dai link for machine drivers
  *
- * Copyright (c) 2014-2019 NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2014-2021 NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -2898,17 +2898,19 @@ EXPORT_SYMBOL_GPL(tegra186_xbar_codec_conf);
 
 struct snd_soc_dai_link *tegra_machine_get_dai_link(void)
 {
-	struct snd_soc_dai_link *link;
+	struct snd_soc_dai_link *link = NULL;
 	unsigned int size = 0;
+
+	if (tegra_asoc_machine_links)
+		return tegra_asoc_machine_links;
 
 	if (of_machine_is_compatible("nvidia,tegra210")  ||
 		of_machine_is_compatible("nvidia,tegra210b01")) {
 		link = tegra210_xbar_dai_links;
 		size = TEGRA210_XBAR_DAI_LINKS;
+	} else {
+		return NULL;
 	}
-
-	if (tegra_asoc_machine_links)
-		return tegra_asoc_machine_links;
 
 	num_dai_links = size;
 
@@ -3009,17 +3011,19 @@ EXPORT_SYMBOL_GPL(tegra_machine_set_dai_fmt);
 
 struct snd_soc_codec_conf *tegra_machine_get_codec_conf(void)
 {
-	struct snd_soc_codec_conf *conf;
+	struct snd_soc_codec_conf *conf = NULL;
 	unsigned int size = 0;
+
+	if (tegra_asoc_codec_conf)
+		return tegra_asoc_codec_conf;
 
 	if (of_machine_is_compatible("nvidia,tegra210")  ||
 		of_machine_is_compatible("nvidia,tegra210b01")) {
 		conf = tegra210_xbar_codec_conf;
 		size = TEGRA210_XBAR_CODEC_CONF;
+	} else {
+		return NULL;
 	}
-
-	if (tegra_asoc_codec_conf)
-		return tegra_asoc_codec_conf;
 
 	tegra_asoc_codec_conf = kzalloc(size *
 		sizeof(struct snd_soc_codec_conf), GFP_KERNEL);
@@ -3932,7 +3936,7 @@ EXPORT_SYMBOL_GPL(release_asoc_phandles);
 
 int tegra_asoc_populate_dai_links(struct platform_device *pdev)
 {
-	struct device_node *np = pdev->dev.of_node, *subnp;
+	struct device_node *np = pdev->dev.of_node, *subnp = NULL;
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 	struct tegra_machine *machine = snd_soc_card_get_drvdata(card);
 	struct snd_soc_dai_link *dai_links, *ahub_links;
@@ -4018,7 +4022,12 @@ int tegra_asoc_populate_dai_links(struct platform_device *pdev)
 			break;
 		}
 
-		of_property_read_string(subnp, "link-name", &dai_links[i].name);
+		ret = of_property_read_string(subnp, "link-name", &dai_links[i].name);
+		if (ret < 0) {
+			dev_err(&pdev->dev, "Property 'link-name' missing\n");
+			ret = -ENOENT;
+			break;
+		}
 
 		/*
 		 * special case for DSPK
@@ -4132,7 +4141,7 @@ int tegra_asoc_populate_dai_links(struct platform_device *pdev)
 	 * release subnp here. DAI links and codec conf release will be
 	 * taken care during error exit of machine driver probe()
 	 */
-	if (ret < 0) {
+	if (ret < 0 && subnp) {
 		of_node_put(subnp);
 		return ret;
 	}
@@ -4153,7 +4162,7 @@ int tegra_asoc_populate_codec_confs(struct platform_device *pdev)
 	char dai_link_name[MAX_STR_SIZE];
 	struct device_node *of_node;
 	struct device_node *np = pdev->dev.of_node, *subnp;
-
+	int ret = 0;
 	ahub_confs = machine->soc_data->ahub_confs;
 	num_ahub_confs = machine->soc_data->num_ahub_confs;
 	num_codec_confs = machine->num_codec_links;
@@ -4190,8 +4199,11 @@ int tegra_asoc_populate_codec_confs(struct platform_device *pdev)
 
 		codec_confs[i + num_ahub_confs].dev_name = NULL;
 		codec_confs[i + num_ahub_confs].of_node = of_node;
-		of_property_read_string(subnp, "name-prefix",
+		ret = of_property_read_string(subnp, "name-prefix",
 			&codec_confs[i + num_ahub_confs].name_prefix);
+		if (ret < 0)
+			dev_err(&pdev->dev,
+			"property 'name-prefix is missing, error %d \n", ret);
 
 		of_node_put(subnp);
 	}
@@ -4199,7 +4211,7 @@ int tegra_asoc_populate_codec_confs(struct platform_device *pdev)
 	card->num_configs = num_confs;
 	card->codec_conf = codec_confs;
 
-	return 0;
+	return ret;
 }
 EXPORT_SYMBOL_GPL(tegra_asoc_populate_codec_confs);
 

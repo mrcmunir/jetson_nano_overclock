@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2011-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * GK20A Graphics
  *
@@ -531,6 +531,7 @@ struct gpu_ops {
 		void (*set_debug_mode)(struct gk20a *g, bool enable);
 		int (*set_mmu_debug_mode)(struct gk20a *g,
 			struct channel_gk20a *ch, bool enable);
+		int (*set_fecs_watchdog_timeout)(struct gk20a *g);
 	} gr;
 	struct {
 		void (*init_hw)(struct gk20a *g);
@@ -622,6 +623,7 @@ struct gpu_ops {
 		void (*slcg_therm_load_gating_prod)(struct gk20a *g, bool prod);
 		void (*slcg_xbar_load_gating_prod)(struct gk20a *g, bool prod);
 		void (*slcg_hshub_load_gating_prod)(struct gk20a *g, bool prod);
+		void (*slcg_acb_load_gating_prod)(struct gk20a *g, bool prod);
 		void (*blcg_bus_load_gating_prod)(struct gk20a *g, bool prod);
 		void (*blcg_ce_load_gating_prod)(struct gk20a *g, bool prod);
 		void (*blcg_ctxsw_firmware_load_gating_prod)(struct gk20a *g, bool prod);
@@ -717,7 +719,7 @@ struct gpu_ops {
 				struct ch_state *ch_state);
 		u32 (*intr_0_error_mask)(struct gk20a *g);
 		int (*is_preempt_pending)(struct gk20a *g, u32 id,
-			unsigned int id_type);
+			unsigned int id_type, bool preempt_retries_left);
 		void (*init_pbdma_intr_descs)(struct fifo_gk20a *f);
 		int (*reset_enable_hw)(struct gk20a *g);
 		int (*setup_userd)(struct channel_gk20a *c);
@@ -1787,9 +1789,12 @@ int gk20a_wait_for_idle(struct gk20a *g);
 
 int gk20a_init_gpu_characteristics(struct gk20a *g);
 
+bool gk20a_check_poweron(struct gk20a *g);
 int gk20a_prepare_poweroff(struct gk20a *g);
 int gk20a_finalize_poweron(struct gk20a *g);
 
+int nvgpu_wait_for_stall_interrupts(struct gk20a *g, u32 timeout);
+int nvgpu_wait_for_nonstall_interrupts(struct gk20a *g, u32 timeout);
 void nvgpu_wait_for_deferred_interrupts(struct gk20a *g);
 
 struct gk20a * __must_check gk20a_get(struct gk20a *g);

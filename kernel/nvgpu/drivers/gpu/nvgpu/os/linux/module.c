@@ -1,7 +1,7 @@
 /*
  * GK20A Graphics
  *
- * Copyright (c) 2011-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2011-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -49,6 +49,7 @@
 #include <nvgpu/clk_arb.h>
 #include <nvgpu/timers.h>
 #include <nvgpu/channel.h>
+#include <nvgpu/nvgpu_err.h>
 
 #include "platform_gk20a.h"
 #include "sysfs.h"
@@ -107,10 +108,7 @@ struct device_node *nvgpu_get_node(struct gk20a *g)
 
 void gk20a_busy_noresume(struct gk20a *g)
 {
-	int ret = pm_runtime_get_if_in_use(dev_from_gk20a(g));
-
-	if (ret <= 0)
-		pm_runtime_get_noresume(dev_from_gk20a(g));
+	pm_runtime_get_noresume(dev_from_gk20a(g));
 }
 
 /*
@@ -262,6 +260,17 @@ int nvgpu_finalize_poweron_linux(struct nvgpu_os_linux *l)
 	return 0;
 }
 
+bool gk20a_check_poweron(struct gk20a *g)
+{
+	bool ret;
+
+	nvgpu_mutex_acquire(&g->power_lock);
+	ret = g->power_on;
+	nvgpu_mutex_release(&g->power_lock);
+
+	return ret;
+}
+
 int gk20a_pm_finalize_poweron(struct device *dev)
 {
 	struct gk20a *g = get_gk20a(dev);
@@ -347,6 +356,10 @@ int gk20a_pm_finalize_poweron(struct device *dev)
 		gk20a_init_cde_support(l);
 #endif
 
+#ifdef CONFIG_NVGPU_SUPPORT_LINUX_ECC_ERROR_REPORTING
+	nvgpu_enable_ecc_reporting(g);
+#endif
+
 	err = gk20a_sched_ctrl_init(g);
 	if (err) {
 		nvgpu_err(g, "failed to init sched control");
@@ -356,8 +369,13 @@ int gk20a_pm_finalize_poweron(struct device *dev)
 	g->sw_ready = true;
 
 done:
-	if (err)
+	if (err) {
 		g->power_on = false;
+
+#ifdef CONFIG_NVGPU_SUPPORT_LINUX_ECC_ERROR_REPORTING
+		nvgpu_disable_ecc_reporting(g);
+#endif
+	}
 
 	nvgpu_mutex_release(&g->power_lock);
 	return err;
@@ -424,6 +442,10 @@ static int gk20a_pm_prepare_poweroff(struct device *dev)
 
 	/* Stop CPU from accessing the GPU registers. */
 	gk20a_lockout_registers(g);
+
+#ifdef CONFIG_NVGPU_SUPPORT_LINUX_ECC_ERROR_REPORTING
+	nvgpu_disable_ecc_reporting(g);
+#endif
 
 	nvgpu_hide_usermode_for_poweroff(g);
 	nvgpu_mutex_release(&g->power_lock);
@@ -1373,6 +1395,10 @@ static int gk20a_probe(struct platform_device *dev)
 		dev_err(&dev->dev, "pm init failed");
 		goto return_err;
 	}
+
+#ifdef CONFIG_NVGPU_SUPPORT_LINUX_ECC_ERROR_REPORTING
+	nvgpu_init_ecc_reporting(gk20a);
+#endif
 
 	gk20a->nvgpu_reboot_nb.notifier_call =
 		nvgpu_kernel_shutdown_notification;

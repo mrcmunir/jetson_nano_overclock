@@ -1,7 +1,7 @@
 /*
  * drivers/video/tegra/nvmap/nvmap_init_t19x.c
  *
- * Copyright (c) 2016-2018, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -24,7 +24,6 @@
 #include "nvmap_priv.h"
 
 bool nvmap_version_t19x;
-extern struct static_key nvmap_updated_cache_config;
 
 const struct of_device_id nvmap_of_ids[] = {
 	{ .compatible = "nvidia,carveouts" },
@@ -159,8 +158,10 @@ static int __init nvmap_gosmem_device_init(struct reserved_mem *rmem,
 				pr_err("sg_alloc_table failed:%d\n", ret);
 				goto free;
 			}
-			sg_set_buf(sgt->sgl,
-				(cpu_addr + i * SZ_4K), SZ_4K);
+			sg_set_page(sgt->sgl, virt_to_page(cpu_addr + i * SZ_4K),
+					      SZ_4K,
+					      offset_in_page(cpu_addr + i * SZ_4K));
+
 		}
 	}
 	rmem->priv = &gosmem;
@@ -225,9 +226,13 @@ static int nvmap_gosmem_notifier(struct notifier_block *nb,
 		 * callbacks can safely query the proper version of nvmap
 		 */
 		if (of_match_node((struct of_device_id *)&nvmap_t19x_of_ids,
-				dev->of_node))
+				dev->of_node)) {
 			nvmap_version_t19x = 1;
-		static_key_slow_inc(&nvmap_updated_cache_config);
+			/* FIX ME: Update correct value after evaluation */
+			nvmap_cache_maint_by_set_ways = 0;
+			cache_maint_inner_threshold = SZ_2M;
+		}
+
 		return NOTIFY_DONE;
 	}
 

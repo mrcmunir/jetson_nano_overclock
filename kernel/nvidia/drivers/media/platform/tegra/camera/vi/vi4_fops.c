@@ -1,7 +1,7 @@
 /*
  * Tegra Video Input 4 device common APIs
  *
- * Copyright (c) 2016-2019, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2016-2020, NVIDIA CORPORATION.  All rights reserved.
  *
  * Author: Frank Chen <frank@nvidia.com>
  *
@@ -29,6 +29,8 @@
 #define MAX_VI_CHANNEL 12
 #define NUM_FIELDS_INTERLACED 2
 #define NUM_FIELDS_SINGLE 1
+#define TOP_FIELD 2
+#define BOTTOM_FIELD 1
 #define SOF_SYNCPT_IDX	0
 #define FE_SYNCPT_IDX	1
 /* 256 byte alignment in accordance to NvRmSurface Pitch alignment.
@@ -177,7 +179,7 @@ static bool vi_notify_wait(struct tegra_channel *chan,
 {
 	int i, err;
 	u32 thresh[TEGRA_CSI_BLOCKS];
-
+	struct vb2_v4l2_buffer *vb = &buf->buf;
 	/*
 	 * Increment syncpt for ATOMP_FE
 	 *
@@ -218,6 +220,10 @@ static bool vi_notify_wait(struct tegra_channel *chan,
 			err = vi_notify_get_capture_status(chan->vnc[i],
 					chan->vnc_id[i],
 					thresh[i], &status);
+			/* Update the buffer sequence received along with
+                         * CSI PXL_EOF Event
+                         */
+			vb->sequence = status.frame;
 			if (unlikely(err))
 				dev_err(chan->vi->dev,
 					"no capture status! err = %d\n", err);
@@ -561,6 +567,14 @@ static int tegra_channel_capture_frame_single_thread(
 				chan->interlace_bplfactor =
 						NUM_FIELDS_INTERLACED;
 			} else {
+			/* Update the offset according to the field received.
+			 * Top field associated with buf sequence 1 should
+			 * be written first followed by the bottom field.
+			 * Unordered fields will be overwritten
+			 */
+				if ((j == BOTTOM_FIELD) &&
+					(vb->sequence != TOP_FIELD))
+					j--;
 				chan->buffer_offset[0] = j *
 				chan->format.bytesperline * chan->format.height;
 
@@ -1063,28 +1077,6 @@ static int vi4_channel_start_streaming(struct vb2_queue *vq, u32 count)
 			}
 			chan->vi->emb_buf_size = emb_buf_size;
 		}
-	}
-	/* Check if sensor mode is interlaced and the type of interlaced mode */
-	sd = chan->subdev_on_csi;
-	node = sd->dev->of_node;
-	s_data = to_camera_common_data(sd->dev);
-
-	/* get sensor properties from DT */
-	if (s_data != NULL && node != NULL) {
-	int idx = s_data->mode_prop_idx;
-
-	if (idx < s_data->sensor_props.num_modes) {
-		sensor_mode =
-			&s_data->sensor_props.sensor_modes[idx];
-		chan->is_interlaced =
-			sensor_mode->control_properties.is_interlaced;
-		if (chan->is_interlaced) {
-			if (sensor_mode->control_properties.interlace_type)
-				chan->interlace_type = Interleaved;
-			else
-				chan->interlace_type = Top_Bottom;
-		}
-	}
 	}
 
 	for (i = 0; i < chan->valid_ports; i++) {

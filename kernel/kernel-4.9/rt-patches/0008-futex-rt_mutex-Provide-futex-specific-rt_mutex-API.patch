@@ -1,7 +1,7 @@
-From d76dd6be8ab0a731ebe1228b5c4ba1a5e7122752 Mon Sep 17 00:00:00 2001
+From ec89615c6cb3de88061a2a89cae080d96d6fe8f6 Mon Sep 17 00:00:00 2001
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Wed, 22 Mar 2017 11:35:51 +0100
-Subject: [PATCH 008/352] futex,rt_mutex: Provide futex specific rt_mutex API
+Subject: [PATCH 008/365] futex,rt_mutex: Provide futex specific rt_mutex API
 
 Upstream commit 5293c2efda37775346885c7e924d4ef7018ea60b
 
@@ -31,16 +31,16 @@ Link: http://lkml.kernel.org/r/20170322104151.702962446@infradead.org
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- kernel/futex.c                  | 30 +++++++++++-----------
- kernel/locking/rtmutex.c        | 55 ++++++++++++++++++++++++++++++-----------
- kernel/locking/rtmutex_common.h |  9 +++++--
- 3 files changed, 62 insertions(+), 32 deletions(-)
+ kernel/futex.c                  | 30 +++++++++---------
+ kernel/locking/rtmutex.c        | 55 ++++++++++++++++++++++++---------
+ kernel/locking/rtmutex_common.h |  8 +++--
+ 3 files changed, 61 insertions(+), 32 deletions(-)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 55bd7e3..cba509f 100644
+index b4cba6dbf608..c126218ac5ed 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -915,7 +915,7 @@ void exit_pi_state_list(struct task_struct *curr)
+@@ -932,7 +932,7 @@ void exit_pi_state_list(struct task_struct *curr)
  		pi_state->owner = NULL;
  		raw_spin_unlock_irq(&curr->pi_lock);
  
@@ -49,7 +49,7 @@ index 55bd7e3..cba509f 100644
  
  		spin_unlock(&hb->lock);
  
-@@ -1363,20 +1363,18 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_q *top_waiter
+@@ -1380,20 +1380,18 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_q *top_waiter
  	pi_state->owner = new_owner;
  	raw_spin_unlock(&new_owner->pi_lock);
  
@@ -78,7 +78,7 @@ index 55bd7e3..cba509f 100644
  
  	return 0;
  }
-@@ -2302,7 +2300,7 @@ static int fixup_owner(u32 __user *uaddr, struct futex_q *q, int locked)
+@@ -2319,7 +2317,7 @@ static int fixup_owner(u32 __user *uaddr, struct futex_q *q, int locked)
  		 * task acquired the rt_mutex after we removed ourself from the
  		 * rt_mutex waiters list.
  		 */
@@ -87,7 +87,7 @@ index 55bd7e3..cba509f 100644
  			locked = 1;
  			goto out;
  		}
-@@ -2617,7 +2615,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -2634,7 +2632,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  	if (!trylock) {
  		ret = rt_mutex_timed_futex_lock(&q.pi_state->pi_mutex, to);
  	} else {
@@ -96,7 +96,7 @@ index 55bd7e3..cba509f 100644
  		/* Fixup the trylock return value: */
  		ret = ret ? 0 : -EWOULDBLOCK;
  	}
-@@ -2640,7 +2638,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -2657,7 +2655,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  	 * it and return the fault to userspace.
  	 */
  	if (ret && (rt_mutex_owner(&q.pi_state->pi_mutex) == current))
@@ -105,7 +105,7 @@ index 55bd7e3..cba509f 100644
  
  	/* Unqueue and drop the lock */
  	unqueue_me_pi(&q);
-@@ -2947,7 +2945,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -2964,7 +2962,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  			spin_lock(q.lock_ptr);
  			ret = fixup_pi_state_owner(uaddr2, &q, current);
  			if (ret && rt_mutex_owner(&q.pi_state->pi_mutex) == current)
@@ -114,7 +114,7 @@ index 55bd7e3..cba509f 100644
  			/*
  			 * Drop the reference to the pi state which
  			 * the requeue_pi() code acquired for us.
-@@ -2987,7 +2985,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3007,7 +3005,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  		 * userspace.
  		 */
  		if (ret && rt_mutex_owner(pi_mutex) == current)
@@ -124,7 +124,7 @@ index 55bd7e3..cba509f 100644
  		/* Unqueue and drop the lock. */
  		unqueue_me_pi(&q);
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index 385715b..c0639b5 100644
+index 57d99e49e967..de302c580d65 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -1511,15 +1511,23 @@ EXPORT_SYMBOL_GPL(rt_mutex_lock_interruptible);
@@ -205,14 +205,12 @@ index 385715b..c0639b5 100644
  
  /**
 diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
-index 50848b4..d4d98c9 100644
+index 14cbafed0014..882d84eda50a 100644
 --- a/kernel/locking/rtmutex_common.h
 +++ b/kernel/locking/rtmutex_common.h
-@@ -110,9 +110,14 @@ extern int rt_mutex_start_proxy_lock(struct rt_mutex *lock,
- extern int rt_mutex_finish_proxy_lock(struct rt_mutex *lock,
- 				      struct hrtimer_sleeper *to,
- 				      struct rt_mutex_waiter *waiter);
-+
+@@ -113,8 +113,12 @@ extern int rt_mutex_wait_proxy_lock(struct rt_mutex *lock,
+ extern bool rt_mutex_cleanup_proxy_lock(struct rt_mutex *lock,
+ 				 struct rt_mutex_waiter *waiter);
  extern int rt_mutex_timed_futex_lock(struct rt_mutex *l, struct hrtimer_sleeper *to);
 -extern bool rt_mutex_futex_unlock(struct rt_mutex *lock,
 -				  struct wake_q_head *wqh);
@@ -226,5 +224,5 @@ index 50848b4..d4d98c9 100644
  
  #ifdef CONFIG_DEBUG_RT_MUTEXES
 -- 
-2.7.4
+2.28.0
 

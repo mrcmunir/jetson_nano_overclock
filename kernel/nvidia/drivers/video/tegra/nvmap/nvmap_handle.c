@@ -159,10 +159,12 @@ static void add_handle_ref(struct nvmap_client *client,
 }
 
 struct nvmap_handle_ref *nvmap_create_handle_from_va(struct nvmap_client *client,
-						     ulong vaddr, size_t size)
+						     ulong vaddr, size_t size,
+						     u32 flags)
 {
 	struct vm_area_struct *vma;
 	struct nvmap_handle_ref *ref;
+	vm_flags_t vm_flags;
 
 	/* don't allow non-page aligned addresses. */
 	if (vaddr & ~PAGE_MASK)
@@ -170,22 +172,29 @@ struct nvmap_handle_ref *nvmap_create_handle_from_va(struct nvmap_client *client
 
 	vma = find_vma(current->mm, vaddr);
 
-	if (unlikely(!vma) || (unlikely(vaddr < vma->vm_start )) ||
-	    unlikely(vaddr >= vma->vm_end) ||
-	    unlikely(size > vma->vm_end - vma->vm_start)) {
+	if (unlikely(!vma))
 		return ERR_PTR(-EINVAL);
-	}
 
 	if (!size)
 		size = vma->vm_end - vaddr;
-	ref = nvmap_create_handle(client, size);
+
+	vm_flags = vma->vm_flags;
+	/*
+	 * If buffer is malloc/mprotect as RO but alloc flag is not passed
+	 * as RO, don't create handle.
+	 */
+	if (!(vm_flags & VM_WRITE) && !(flags & NVMAP_HANDLE_RO))
+		return ERR_PTR(-EINVAL);
+
+	ref = nvmap_create_handle(client, size, flags & NVMAP_HANDLE_RO);
 	if (!IS_ERR(ref))
 		ref->handle->orig_size = size;
+
 	return ref;
 }
 
 struct nvmap_handle_ref *nvmap_create_handle(struct nvmap_client *client,
-					     size_t size)
+					     size_t size, bool ro_buf)
 {
 	void *err = ERR_PTR(-ENOMEM);
 	struct nvmap_handle *h;
@@ -222,7 +231,7 @@ struct nvmap_handle_ref *nvmap_create_handle(struct nvmap_client *client,
 	 * This takes out 1 ref on the dambuf. This corresponds to the
 	 * handle_ref that gets automatically made by nvmap_create_handle().
 	 */
-	h->dmabuf = __nvmap_make_dmabuf(client, h);
+	h->dmabuf = __nvmap_make_dmabuf(client, h, ro_buf);
 	if (IS_ERR(h->dmabuf)) {
 		err = h->dmabuf;
 		goto make_dmabuf_fail;

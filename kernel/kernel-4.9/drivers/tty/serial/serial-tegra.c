@@ -3,7 +3,7 @@
  *
  * High-speed serial driver for NVIDIA Tegra SoCs
  *
- * Copyright (c) 2012-2018, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2012-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * Author: Laxman Dewangan <ldewangan@nvidia.com>
  *
@@ -64,7 +64,7 @@
 #define TEGRA_UART_TX_PIO			1
 #define TEGRA_UART_TX_DMA			2
 #define TEGRA_UART_MIN_DMA			16
-#define TEGRA_UART_FIFO_SIZE			32
+#define TEGRA_UART_FIFO_SIZE			36
 
 /*
  * Tx fifo trigger level setting in tegra uart is in
@@ -1435,8 +1435,10 @@ static void tegra_uart_flush_buffer(struct uart_port *u)
 	struct tegra_uart_port *tup = to_tegra_uport(u);
 
 	tup->tx_bytes = 0;
-	if (tup->tx_dma_chan)
+	if (tup->tx_dma_chan) {
 		dmaengine_terminate_all(tup->tx_dma_chan);
+		tup->tx_in_progress = 0;
+	}
 }
 
 static void tegra_uart_shutdown(struct uart_port *u)
@@ -1699,15 +1701,23 @@ static int tegra_uart_debug_show(struct seq_file *s, void *unused)
 	struct uart_port *u = &tup->uport;
 	struct tty_port *port = &tup->uport.state->port;
 	unsigned long flags;
-	int count, ldisc_count;
+	int count = 0;
+	int ldisc_count = 0;
+	int ret = 0;
 
-	spin_lock_irqsave(&u->lock, flags);
-	count = tty_buffer_get_count(port);
-	ldisc_count = n_tty_buffer_get_count(port->itty);
-	seq_printf(s, "%d:%d\n", count, ldisc_count);
-	spin_unlock_irqrestore(&u->lock, flags);
+	if (port) {
+		spin_lock_irqsave(&u->lock, flags);
+		count = tty_buffer_get_count(port);
+		if (port->itty)
+			ldisc_count = n_tty_buffer_get_count(port->itty);
+		else
+			ret = -EIO;
+		seq_printf(s, "%d:%d\n", count, ldisc_count);
+		spin_unlock_irqrestore(&u->lock, flags);
+	} else
+		ret = -EIO;
 
-	return 0;
+	return ret;
 }
 
 static int tegra_uart_debug_open(struct inode *inode, struct file *f)
@@ -1837,7 +1847,7 @@ static int tegra_uart_probe(struct platform_device *pdev)
 	u->dev = &pdev->dev;
 	u->ops = &tegra_uart_ops;
 	u->type = PORT_TEGRA;
-	u->fifosize = 32;
+	u->fifosize = TEGRA_UART_FIFO_SIZE;
 	tup->cdata = cdata;
 
 	platform_set_drvdata(pdev, tup);

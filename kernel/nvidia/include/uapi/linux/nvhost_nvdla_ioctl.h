@@ -52,6 +52,21 @@ struct nvdla_ping_args {
 	__u32 out_response;
 };
 
+/**
+ * struct nvdla_mem_share_handle structure for sharing memory identifier
+ * and its properties
+ *
+ * @share_id		identifier of handle to be shared
+ * @offset		offset within the shared memory
+ * @access_flags	access with which memory is intended to be shared
+ * @reserved		reserved for future use
+ **/
+struct nvdla_mem_share_handle {
+	__u32 share_id;
+	__u32 offset;
+	__u32 access_flags;
+	__u32 reserved;
+};
 
 /**
  * struct nvdla_pin_unpin_args strcture args for buffer pin/unpin
@@ -239,8 +254,12 @@ struct nvdla_status_notify {
 	_IOWR(NVHOST_NVDLA_IOCTL_MAGIC, 7, struct nvdla_get_q_status_args)
 #define NVDLA_IOCTL_EMU_TASK_SUBMIT \
 	_IOWR(NVHOST_NVDLA_IOCTL_MAGIC, 8, struct nvdla_submit_args)
+#define NVDLA_IOCTL_ALLOC_QUEUE \
+	_IO(NVHOST_NVDLA_IOCTL_MAGIC, 9)
+#define NVDLA_IOCTL_RELEASE_QUEUE \
+	_IO(NVHOST_NVDLA_IOCTL_MAGIC, 10)
 #define NVDLA_IOCTL_LAST		\
-		_IOC_NR(NVDLA_IOCTL_EMU_TASK_SUBMIT)
+		_IOC_NR(NVDLA_IOCTL_RELEASE_QUEUE)
 
 #define NVDLA_IOCTL_MAX_ARG_SIZE  \
 		sizeof(struct nvdla_pin_unpin_args)

@@ -1,7 +1,7 @@
 /*
  * drivers/video/tegra/camera/tegra_camera_platform.c
  *
- * Copyright (c) 2015-2018, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2015-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -72,7 +72,6 @@ struct tegra_camera_info {
 	u32 ppc_divider;
 	u32 num_active_streams;
 	u32 num_device_lanes;
-	u32 total_sensor_lanes;
 	u32 sensor_type;
 	u32 memory_latency;
 	bool pg_mode;
@@ -351,6 +350,9 @@ int tegra_camera_update_isobw(void)
 	struct tegra_camera_info *info;
 	unsigned long total_khz;
 	unsigned long bw;
+#ifdef CONFIG_TEGRA_MC
+	unsigned long bw_mbps;
+#endif
 	int ret = 0;
 
 	if (tegra_camera_misc.parent == NULL) {
@@ -384,10 +386,13 @@ int tegra_camera_update_isobw(void)
 	/*
 	 * Different chip versions use different APIs to set LA for VI.
 	 * If one fails, try another, and fail if both of them don't work.
+	 * Convert bw from kbps to mbps, and round up to the next mbps to
+	 * guarantee it's larger than the requested for LA/PTSA setting.
 	 */
-	ret = tegra_set_camera_ptsa(TEGRA_LA_VI_W, bw, 1);
+	bw_mbps = (bw / 1000U) + 1;
+	ret = tegra_set_camera_ptsa(TEGRA_LA_VI_W, bw_mbps, 1);
 	if (ret) {
-		ret = tegra_set_latency_allowance(TEGRA_LA_VI_W, bw);
+		ret = tegra_set_latency_allowance(TEGRA_LA_VI_W, bw_mbps);
 		if (ret) {
 			dev_err(info->dev, "%s: set la failed: %d\n",
 				__func__, ret);
@@ -622,7 +627,6 @@ static int tegra_camera_probe(struct platform_device *pdev)
 	info->ppc_divider = 1;
 	info->num_active_streams = 0;
 	info->num_device_lanes = 0;
-	info->total_sensor_lanes = 0;
 	info->sensor_type = 0;
 	info->memory_latency = 0;
 	info->pg_mode = false;
@@ -646,6 +650,8 @@ static void update_platform_data(struct tegra_camera_dev_info *cdev,
 	/* TPG: handled differently based on
 	 * throughput calculations.
 	 */
+	static u64 phy_pixel_rate_aggregated = 0;
+
 	if (cdev->sensor_type == SENSORTYPE_VIRTUAL)
 		info->pg_mode = dev_registered;
 
@@ -663,18 +669,22 @@ static void update_platform_data(struct tegra_camera_dev_info *cdev,
 		 */
 		if (cdev->bpp > 2)
 			info->ppc_divider = 2;
-		if (cdev->sensor_type != SENSORTYPE_NONE)
-			info->total_sensor_lanes += cdev->lane_num;
-		if (info->total_sensor_lanes <= info->num_device_lanes)
-			info->phy_pixel_rate += cdev->pixel_rate;
+		if (cdev->lane_num < info->num_device_lanes) {
+			// temp variable to store aggregated rate
+			phy_pixel_rate_aggregated += cdev->pixel_rate;
+		} else if (cdev->lane_num == info->num_device_lanes) {
+			if (info->phy_pixel_rate < cdev->pixel_rate) {
+				info->phy_pixel_rate = cdev->pixel_rate;
+			}
+		}
+
+		if (info->phy_pixel_rate < phy_pixel_rate_aggregated)
+			info->phy_pixel_rate = phy_pixel_rate_aggregated;
+
 		if (info->max_pixel_depth < cdev->pixel_bit_depth)
 			info->max_pixel_depth = cdev->pixel_bit_depth;
 		if (info->memory_latency < cdev->memory_latency)
 			info->memory_latency = cdev->memory_latency;
-	} else {
-		if (info->total_sensor_lanes <= info->num_device_lanes)
-			info->phy_pixel_rate -= cdev->pixel_rate;
-		info->total_sensor_lanes -= cdev->lane_num;
 	}
 }
 

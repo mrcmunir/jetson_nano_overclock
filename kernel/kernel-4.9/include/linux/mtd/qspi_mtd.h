@@ -3,7 +3,7 @@
  *
  * Author: Mike Lavender, mike@steroidmicros.com
  * Copyright (c) 2005, Intec Automation Inc.
- * Copyright (C) 2013-2019 NVIDIA Corporation. All rights reserved.
+ * Copyright (C) 2013-2021 NVIDIA Corporation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ enum qspi_operation_mode {
 	STATUS_READ,
 	READ_ANY_REG,
 	WRITE_ANY_REG,
+	READ_SFDP,
 	OPERATION_MAX_LIMIT,
 };
 
@@ -398,11 +399,20 @@ struct qcmdset macronix_porg_cmd_info_table[OPERATION_MAX_LIMIT] = {
 			.bus_width = X1, .dummy_cycles = 0},
 		{.is_ddr = FALSE, .bus_width = X1}
 	},
-	/*INVALID READ_ANY_REG */
-	{
+	/* READ_ANY_REG */
+	{ {.op_code = 0x65, .is_ddr = FALSE, .bus_width = X1, .post_txn = 2},
+		{.address = 0, .is_ddr = FALSE, .len = 3,
+			.bus_width = X1, .dummy_cycles = 1},
+		{.is_ddr = FALSE, .bus_width = X1}
 	},
 	/*INVALID WRITE_ANY_REG */
 	{
+	},
+	/*  READ_SFDP */
+	{ {.op_code = 0x5a, .is_ddr = FALSE, .bus_width = X1, .post_txn = 2},
+		{.address = 0, .is_ddr = FALSE, .len = 3,
+			.bus_width = X1, .dummy_cycles = 8},
+		{.is_ddr = FALSE, .bus_width = X1}
 	},
 };
 
@@ -426,6 +436,13 @@ struct qcmdset macronix_porg_cmd_info_table[OPERATION_MAX_LIMIT] = {
 #define MX_QUAD_ENABLE		0x40	/* Enable Quad bit - Macronix */
 
 #define JEDEC_MFR(_jedec_id)	((_jedec_id) >> 16)
+
+#define SFDP_ID_MX25U3232F	0x10	/* Value at addr 0x0B for MX25U3232F */
+#define SFDP_ID_MX25U3235F	0x09	/* Value at addr 0x0B for MX25U3235F */
+#define SFDP_ADDR		0x0b	/* SFDP address to distinguish
+					 * between MX25U3235F and MX25U3232F
+					 * Bug 200677544
+					 */
 
 #define INFO(_jedec_id, _ext_id, _sector_size,		\
 		 _n_sectors, _subsector_size,		\
@@ -522,6 +539,9 @@ static const struct spi_device_id qspi_ids[] = {
 	},
 	{	"MX25U3235F",
 		INFO(0xC22536, 0, 4 * 1024, 1024, 0, 0, 0, 0, 256, 0)
+	},
+	{	"mx75u25690f",
+		INFO(0xC22939, 0, 4 * 1024, 8192, 0, 0, 0, 0, 256, 0)
 	},
 	{ },
 };

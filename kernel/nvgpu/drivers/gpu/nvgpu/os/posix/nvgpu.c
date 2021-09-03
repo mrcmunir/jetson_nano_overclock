@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2018-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#include <nvgpu/gk20a.h>
 #include <nvgpu/bug.h>
 #include <nvgpu/types.h>
 #include <nvgpu/atomic.h>
@@ -34,6 +35,22 @@
 #include <nvgpu/posix/probe.h>
 
 #include "os_posix.h"
+
+int nvgpu_wait_for_stall_interrupts(struct gk20a *g, u32 timeout)
+{
+	/*
+	 * No interrupts in userspace so nothing to wait for.
+	 */
+	return 0;
+}
+
+int nvgpu_wait_for_nonstall_interrupts(struct gk20a *g, u32 timeout)
+{
+	/*
+	 * No interrupts in userspace so nothing to wait for.
+	 */
+	return 0;
+}
 
 void nvgpu_wait_for_deferred_interrupts(struct gk20a *g)
 {
@@ -90,6 +107,11 @@ void gk20a_busy_noresume(struct gk20a *g)
 
 void gk20a_idle_nosuspend(struct gk20a *g)
 {
+}
+
+bool gk20a_check_poweron(struct gk20a *g)
+{
+	return false;
 }
 
 int gk20a_busy(struct gk20a *g)

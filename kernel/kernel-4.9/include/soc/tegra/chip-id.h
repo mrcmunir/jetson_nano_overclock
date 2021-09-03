@@ -99,6 +99,7 @@ enum tegra_revision {
 	TEGRA186_REVISION_A04p,
 	TEGRA194_REVISION_A01,
 	TEGRA194_REVISION_A02,
+	TEGRA194_REVISION_A02p,
 	TEGRA_REVISION_QT,
 	TEGRA_REVISION_SIM,
 	TEGRA_REVISION_MAX,
@@ -134,6 +135,7 @@ struct tegra_sku_info {
 
 u32 tegra_read_straps(void);
 u32 tegra_read_chipid(void);
+int tegra_miscreg_set_erd(u64 err_config);
 
 extern struct tegra_sku_info tegra_sku_info;
 

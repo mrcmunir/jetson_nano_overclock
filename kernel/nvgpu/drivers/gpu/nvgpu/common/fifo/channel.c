@@ -1,7 +1,7 @@
 /*
  * GK20A Graphics channel
  *
- * Copyright (c) 2011-2019, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2011-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -333,7 +333,7 @@ static void gk20a_free_channel(struct channel_gk20a *ch, bool force)
 			 * have an open channel fd anymore to use for the unbind
 			 * ioctl.
 			 */
-			err = gk20a_tsg_unbind_channel(ch);
+			err = gk20a_tsg_unbind_channel(ch, true);
 			if (err) {
 				nvgpu_err(g,
 					"failed to unbind channel %d from TSG",
@@ -511,6 +511,9 @@ unbind:
 	memset(ch->ref_actions, 0, sizeof(ch->ref_actions));
 	ch->ref_actions_put = 0;
 #endif
+
+	nvgpu_cond_destroy(&ch->notifier_wq);
+	nvgpu_cond_destroy(&ch->semaphore_wq);
 
 	/* make sure we catch accesses of unopened channels in case
 	 * there's non-refcounted channel pointers hanging around */

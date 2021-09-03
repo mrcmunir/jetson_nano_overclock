@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -280,7 +280,7 @@ static int tegra_fuse_pre_burn_process(struct tegra_fuse_burn_dev *fuse_dev)
 	u32 off_0_val, off_1_val, reg;
 	int ret;
 
-	if (fuse_dev->tz) {
+	if (fuse_dev->tz && !IS_ERR(fuse_dev->tz)) {
 		ret = tegra_fuse_is_temp_under_range(fuse_dev);
 		if (ret)
 			return ret;
@@ -749,6 +749,7 @@ static struct tegra_fuse_hw_feature tegra194_fuse_chip_data = {
 		FUSE_BURN_DATA(reserved_odm9, 0x18, 26, 32, 0x424, true, false),
 		FUSE_BURN_DATA(reserved_odm10, 0x1a, 26, 32, 0x428, true, false),
 		FUSE_BURN_DATA(reserved_odm11, 0x1c, 26, 32, 0x42c, true, false),
+		FUSE_BURN_DATA(reserved_sw, 0x65, 25, 24, 0xc0, false, false),
 		FUSE_BURN_DATA(odm_lock, 0, 6, 4, 0x8, true, false),
 		FUSE_BURN_DATA(arm_jtag_disable, 0x0, 12, 1, 0xb8, true, false),
 		FUSE_BURN_DATA(odm_production_mode, 0, 11, 1, 0xa0, true, false),
@@ -761,6 +762,8 @@ static struct tegra_fuse_hw_feature tegra194_fuse_chip_data = {
 		FUSE_BURN_DATA(kek0, 0x6f, 30, 128, 0x2c0, false, true),
 		FUSE_BURN_DATA(kek1, 0x73, 30, 128, 0x2d0, false, true),
 		FUSE_BURN_DATA(kek2, 0x77, 30, 128, 0x2e0, false, true),
+		FUSE_BURN_DATA(boot_device_info, 0x65, 1, 24, 0xbc, false, false),
+		FUSE_BURN_DATA(odmid, 0x7b, 30, 64, 0x308, false, false),
 		FUSE_SYSFS_DATA(opt_tpc_disable,
 				tegra_fuse_read_opt_tpc_disable, NULL, FPERM_R),
 		{},

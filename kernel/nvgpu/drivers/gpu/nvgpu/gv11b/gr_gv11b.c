@@ -1,7 +1,7 @@
 /*
  * GV11b GPU GR
  *
- * Copyright (c) 2016-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -37,6 +37,7 @@
 #include <nvgpu/bitops.h>
 #include <nvgpu/gk20a.h>
 #include <nvgpu/channel.h>
+#include <nvgpu/nvgpu_err.h>
 
 #include "gk20a/gr_gk20a.h"
 #include "gk20a/dbg_gpu_gk20a.h"
@@ -61,6 +62,8 @@
 #include <nvgpu/hw/gv11b/hw_pbdma_gv11b.h>
 #include <nvgpu/hw/gv11b/hw_perf_gv11b.h>
 
+#define SHIFT_8_BITS	8U
+
 #define GFXP_WFI_TIMEOUT_COUNT_IN_USEC_DEFAULT 100
 
 /* ecc scrubbing will done in 1 pri read cycle,but for safety used 10 retries */
@@ -77,6 +80,7 @@ bool gr_gv11b_is_valid_class(struct gk20a *g, u32 class_num)
 {
 	bool valid = false;
 
+	nvgpu_speculation_barrier();
 	switch (class_num) {
 	case VOLTA_COMPUTE_A:
 	case VOLTA_A:
@@ -106,6 +110,7 @@ bool gr_gv11b_is_valid_gfx_class(struct gk20a *g, u32 class_num)
 {
 	bool valid = false;
 
+	nvgpu_speculation_barrier();
 	switch (class_num) {
 	case VOLTA_A:
 	case PASCAL_A:
@@ -140,6 +145,7 @@ bool gr_gv11b_is_valid_compute_class(struct gk20a *g, u32 class_num)
 {
 	bool valid = false;
 
+	nvgpu_speculation_barrier();
 	switch (class_num) {
 	case VOLTA_COMPUTE_A:
 	case PASCAL_COMPUTE_A:
@@ -221,6 +227,12 @@ static int gr_gv11b_handle_l1_tag_exception(struct gk20a *g, u32 gpc, u32 tpc,
 		}
 		g->ecc.gr.sm_l1_tag_ecc_corrected_err_count[gpc][tpc].counter +=
 							l1_tag_corrected_err_count_delta;
+
+		nvgpu_report_ecc_err(g, NVGPU_ERR_MODULE_SM,
+				(gpc << SHIFT_8_BITS) | tpc,
+				GPU_SM_L1_TAG_ECC_CORRECTED, 0,
+				g->ecc.gr.sm_l1_tag_ecc_corrected_err_count[gpc][tpc].counter);
+
 		gk20a_writel(g,
 			gr_pri_gpc0_tpc0_sm_l1_tag_ecc_corrected_err_count_r() + offset,
 			0);
@@ -237,6 +249,12 @@ static int gr_gv11b_handle_l1_tag_exception(struct gk20a *g, u32 gpc, u32 tpc,
 		}
 		g->ecc.gr.sm_l1_tag_ecc_uncorrected_err_count[gpc][tpc].counter +=
 							l1_tag_uncorrected_err_count_delta;
+
+		nvgpu_report_ecc_err(g, NVGPU_ERR_MODULE_SM,
+			(gpc << SHIFT_8_BITS) | tpc,
+			GPU_SM_L1_TAG_ECC_UNCORRECTED, 0,
+			g->ecc.gr.sm_l1_tag_ecc_uncorrected_err_count[gpc][tpc].counter);
+
 		gk20a_writel(g,
 			gr_pri_gpc0_tpc0_sm_l1_tag_ecc_uncorrected_err_count_r() + offset,
 			0);
@@ -332,6 +350,10 @@ static int gr_gv11b_handle_lrf_exception(struct gk20a *g, u32 gpc, u32 tpc,
 		}
 		g->ecc.gr.sm_lrf_ecc_double_err_count[gpc][tpc].counter +=
 							lrf_uncorrected_err_count_delta;
+		nvgpu_report_ecc_err(g, NVGPU_ERR_MODULE_SM,
+			(gpc << SHIFT_8_BITS) | tpc,
+			GPU_SM_LRF_ECC_UNCORRECTED, 0,
+			g->ecc.gr.sm_lrf_ecc_double_err_count[gpc][tpc].counter);
 		gk20a_writel(g,
 			gr_pri_gpc0_tpc0_sm_lrf_ecc_uncorrected_err_count_r() + offset,
 			0);
@@ -494,6 +516,12 @@ static int gr_gv11b_handle_cbu_exception(struct gk20a *g, u32 gpc, u32 tpc,
 		}
 		g->ecc.gr.sm_cbu_ecc_uncorrected_err_count[gpc][tpc].counter +=
 							cbu_uncorrected_err_count_delta;
+
+		nvgpu_report_ecc_err(g, NVGPU_ERR_MODULE_SM,
+				(gpc << SHIFT_8_BITS) | tpc,
+				GPU_SM_CBU_ECC_UNCORRECTED,
+				0, g->ecc.gr.sm_cbu_ecc_uncorrected_err_count[gpc][tpc].counter);
+
 		gk20a_writel(g,
 			gr_pri_gpc0_tpc0_sm_cbu_ecc_uncorrected_err_count_r() + offset,
 			0);
@@ -577,6 +605,10 @@ static int gr_gv11b_handle_l1_data_exception(struct gk20a *g, u32 gpc, u32 tpc,
 		}
 		g->ecc.gr.sm_l1_data_ecc_uncorrected_err_count[gpc][tpc].counter +=
 							l1_data_uncorrected_err_count_delta;
+		nvgpu_report_ecc_err(g, NVGPU_ERR_MODULE_SM,
+				(gpc << SHIFT_8_BITS) | tpc,
+				GPU_SM_L1_DATA_ECC_UNCORRECTED,
+				0, g->ecc.gr.sm_l1_data_ecc_uncorrected_err_count[gpc][tpc].counter);
 		gk20a_writel(g,
 			gr_pri_gpc0_tpc0_sm_l1_data_ecc_uncorrected_err_count_r() + offset,
 			0);
@@ -2534,10 +2566,18 @@ static void gr_gv11b_handle_fecs_ecc_error(struct gk20a *g, u32 intr)
 
 		if (ecc_status &
 			gr_fecs_falcon_ecc_status_corrected_err_imem_m()) {
+			nvgpu_report_ecc_err(g, NVGPU_ERR_MODULE_FECS, 0,
+				GPU_FECS_FALCON_IMEM_ECC_CORRECTED,
+				ecc_addr,
+				g->ecc.gr.fecs_ecc_corrected_err_count[0].counter);
 			nvgpu_log(g, gpu_dbg_intr, "imem ecc error corrected");
 		}
 		if (ecc_status &
 			gr_fecs_falcon_ecc_status_uncorrected_err_imem_m()) {
+			nvgpu_report_ecc_err(g, NVGPU_ERR_MODULE_FECS, 0,
+				GPU_FECS_FALCON_IMEM_ECC_UNCORRECTED,
+				ecc_addr,
+				g->ecc.gr.fecs_ecc_uncorrected_err_count[0].counter);
 			nvgpu_log(g, gpu_dbg_intr,
 						"imem ecc error uncorrected");
 		}
@@ -2547,6 +2587,10 @@ static void gr_gv11b_handle_fecs_ecc_error(struct gk20a *g, u32 intr)
 		}
 		if (ecc_status &
 			gr_fecs_falcon_ecc_status_uncorrected_err_dmem_m()) {
+			nvgpu_report_ecc_err(g, NVGPU_ERR_MODULE_FECS, 0,
+				GPU_FECS_FALCON_DMEM_ECC_UNCORRECTED,
+				ecc_addr,
+				g->ecc.gr.fecs_ecc_uncorrected_err_count[0].counter);
 			nvgpu_log(g, gpu_dbg_intr,
 						"dmem ecc error uncorrected");
 		}
@@ -5070,4 +5114,18 @@ int gv11b_gr_clear_sm_error_state(struct gk20a *g,
 fail:
 	nvgpu_mutex_release(&g->dbg_sessions_lock);
 	return err;
+}
+
+int gr_gv11b_set_fecs_watchdog_timeout(struct gk20a *g)
+{
+	return gr_gk20a_submit_fecs_method_op_locked(g,
+	      (struct fecs_method_op_gk20a) {
+		      .method.addr = gr_fecs_method_push_adr_set_watchdog_timeout_f(),
+		      .method.data = 0x7fffffff,
+		      .mailbox = { .id   = 0,
+				   .data = ~0, .clr = ~0, .ret = NULL,
+				   .ok = gr_fecs_ctxsw_mailbox_value_pass_v(),
+				   .fail = 0, },
+		      .cond.ok = GR_IS_UCODE_OP_EQUAL,
+		      .cond.fail = GR_IS_UCODE_OP_SKIP}, false);
 }
