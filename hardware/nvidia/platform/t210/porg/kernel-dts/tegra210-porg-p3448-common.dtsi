@@ -769,7 +769,7 @@
 	clock@70110000 {
 		status = "okay";
 		vdd-cpu-supply = <&cpu_ovr_reg>;
-		// Limitation max nvidia,dfll-max-freq-khz = <1479000>;
+		nvidia,dfll-max-freq-khz = <1479000>;
 		nvidia,pwm-to-pmic;
 		nvidia,init-uv = <1000000>;
 		nvidia,sample-rate = <25000>;
@@ -791,7 +791,7 @@
 	dvfs {
 		compatible = "nvidia,tegra210-dvfs";
                 vdd-cpu-supply = <&cpu_ovr_reg>;
-               //needed for gpu higher speed nvidia,gpu-max-freq-khz = <921600>;
+                
 	};
 
 	rtc {

@@ -3,7 +3,7 @@
  *
  * Tegra NvDLA Driver
  *
- * Copyright (c) 2016-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -27,6 +27,17 @@
 #if !defined(__KERNEL__)
 #define __user
 #endif
+
+/**
+ * Limits exposed to userspace
+ */
+#define MAX_NVDLA_PREFENCES_PER_TASK		32
+#define MAX_NVDLA_POSTFENCES_PER_TASK		32
+#define MAX_NVDLA_EMU_PREFENCES_PER_TASK	16
+#define MAX_NVDLA_EMU_POSTFENCES_PER_TASK	16
+#define MAX_NVDLA_IN_STATUS_PER_TASK		MAX_NVDLA_PREFENCES_PER_TASK
+#define MAX_NVDLA_OUT_STATUS_PER_TASK		MAX_NVDLA_POSTFENCES_PER_TASK
+#define MAX_NVDLA_OUT_TIMESTAMPS_PER_TASK	32
 
 /**
  * struct nvdla_queue_stat_args strcture
@@ -94,8 +105,9 @@ struct nvdla_pin_unpin_args {
 struct nvdla_submit_args {
 	__u64 tasks;
 	__u16 num_tasks;
-#define MAX_TASKS_PER_SUBMIT		16
+#define MAX_NVDLA_TASKS_PER_SUBMIT	16
 #define NVDLA_SUBMIT_FLAGS_ATOMIC	(1 << 0)
+#define NVDLA_SUBMIT_FLAGS_BYPASS_EXEC	(1 << 1)
 	__u16 flags;
 	__u32 version;
 };
@@ -127,11 +139,18 @@ struct nvdla_get_q_status_args {
  *
  * @handle		handle to buffer allocated in userspace
  * @offset		offset in buffer
+ * @type		buffer heap type
+ * @reserved		reserved for future use
  *
  */
 struct nvdla_mem_handle {
 	__u32 handle;
 	__u32 offset;
+#define NVDLA_BUFFER_TYPE_MC		0U
+#define NVDLA_BUFFER_TYPE_CV		1U
+#define NVDLA_BUFFER_TYPE_INTERNAL	2U
+	__u8 type;
+	__u8 reserved[3];
 };
 
 /**

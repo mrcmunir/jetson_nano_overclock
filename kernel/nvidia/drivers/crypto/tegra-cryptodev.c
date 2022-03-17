@@ -357,16 +357,22 @@ static int process_crypt_req(struct file *filp, struct tegra_crypto_ctx *ctx,
 			/* crypto driver is asynchronous */
 			ret = wait_for_completion_timeout(&tcrypt_complete.restart,
 						msecs_to_jiffies(5000));
-			if (ret == 0)
+			if (ret == 0) {
+				pr_err("%scrypt timed out\n",
+					crypt_req->encrypt ? "en" : "de");
+				ret = -ENODATA;
 				goto process_req_buf_out;
+			}
 
 			if (tcrypt_complete.req_err < 0) {
 				ret = tcrypt_complete.req_err;
+				pr_err("%scrypt failed (%d)\n",
+					crypt_req->encrypt ? "en" : "de", ret);
 				goto process_req_buf_out;
 			}
 		} else if (ret < 0) {
-			pr_debug("%scrypt failed (%d)\n",
-				crypt_req->encrypt ? "en" : "de", ret);
+			pr_err("%scrypt failed (%d)\n",
+					crypt_req->encrypt ? "en" : "de", ret);
 			goto process_req_buf_out;
 		}
 
@@ -1670,12 +1676,11 @@ static long tegra_crypto_dev_ioctl(struct file *filp,
 				rng_req.nbytes);
 		}
 
-		if (ret != rng_req.nbytes) {
+		if (ret != 0) {
 			if (rng_req.type == RNG_DRBG)
 				pr_err("rng_drbg failed");
 			else
 				pr_err("rng failed");
-			ret = -ENODATA;
 			goto free_tfm;
 		}
 		ret = copy_to_user((void __user *)rng_req.rdata,
@@ -1869,9 +1874,8 @@ rng_out:
 		ret = crypto_rng_get_bytes(ctx->rng, rng,
 				rng_req.nbytes);
 
-		if (ret != rng_req.nbytes) {
+		if (ret != 0) {
 			pr_err("rng failed");
-			ret = -ENODATA;
 			goto free_rng1_tfm;
 		}
 
