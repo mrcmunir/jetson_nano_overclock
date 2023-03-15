@@ -105,7 +105,7 @@ static const unsigned long tegra210_cpu_max_freq_table[] = {
 	[6] = 2014500000UL,
 	[7] = 1734000000UL,
 	[8] = 1683000000UL,
-	[9] = 2218500000UL,
+	[9] = 1555500000UL,
 	[10] = 1504500000UL,
 };
 
@@ -199,13 +199,8 @@ static const unsigned long tegra210_cpu_max_freq_table[] = {
 		{1224000000UL,	{1081943, 0, 0} }, \
 		{1326000000UL,	{1090000, 0, 0} }, \
 		{1479000000UL,	{1090000, 0, 0} }, \
-		{1555500000UL,	{1140000, 0, 0} }, \
-		{1683000000UL,	{1140000, 0, 0} }, \
-		{1734000000UL,	{1195000, 0, 0} }, \
-		{1836000000UL,	{1195000, 0, 0} }, \
-		{1912500000UL,	{1227500, 0, 0} }, \
-		{2014500000UL,	{1227500, 0, 0} }, \
-		{2218500000UL,	{1296500, 0, 0} }, \
+		{1555500000UL,	{1162000, 0, 0} }, \
+		{1683000000UL,	{1195000, 0, 0} }, \
 		{0,           	{      0, 0, 0} }, \
 	}
 
@@ -284,7 +279,7 @@ struct cvb_table tegra210_cpu_cvb_tables[] = {
 		.speedo_id = 9,
 		.process_id = 0,
 		.min_millivolts = 900,
-		.max_millivolts = 1300,
+		.max_millivolts = 1162,
 		CPU_CVB_TABLE_EUCM2,
 		.cpu_dfll_data = {
 			.tune0_low = 0xffead0ff,
@@ -296,7 +291,7 @@ struct cvb_table tegra210_cpu_cvb_tables[] = {
 		.speedo_id = 9,
 		.process_id = 1,
 		.min_millivolts = 900,
-		.max_millivolts = 1300,
+		.max_millivolts = 1162,
 		CPU_CVB_TABLE_EUCM2,
 		.cpu_dfll_data = {
 			.tune0_low = 0xffead0ff,
@@ -810,6 +805,7 @@ static int tegra124_dfll_fcpu_probe(struct platform_device *pdev)
 	struct rail_alignment align;
 	const struct thermal_table *thermal;
 	unsigned long max_freq;
+	u32 f;
 	bool ucm2;
 
 	of_id = of_match_device(tegra124_dfll_fcpu_of_match, &pdev->dev);
@@ -826,6 +822,9 @@ static int tegra124_dfll_fcpu_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 	max_freq = fcpu_data->cpu_max_freq_table[speedo_id];
+	if (!of_property_read_u32(pdev->dev.of_node, "nvidia,dfll-max-freq-khz",
+				  &f))
+		max_freq = min(max_freq, f * 1000UL);
 
 	soc = devm_kzalloc(&pdev->dev, sizeof(*soc), GFP_KERNEL);
 	if (!soc)

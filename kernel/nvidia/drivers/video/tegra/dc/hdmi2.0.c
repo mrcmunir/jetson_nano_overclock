@@ -1,7 +1,7 @@
 /*
  * hdmi2.0.c: hdmi2.0 driver.
  *
- * Copyright (c) 2014-2021, NVIDIA CORPORATION, All rights reserved.
+ * Copyright (c) 2014-2022, NVIDIA CORPORATION, All rights reserved.
  * Author: Animesh Kishore <ankishore@nvidia.com>
  *
  * This software is licensed under the terms of the GNU General Public
@@ -594,7 +594,7 @@ static int tegra_hdmi_controller_disable(struct tegra_hdmi *hdmi)
 	tegra_dc_get(dc);
 
 	/* disable hdcp */
-	if (hdmi->edid_src == EDID_SRC_PANEL && !hdmi->dc->vedid)
+	if (!hdmi->dc->vedid)
 		tegra_nvhdcp_set_plug(hdmi->nvhdcp, false);
 
 	cancel_delayed_work_sync(&hdmi->scdc_work);
@@ -677,8 +677,7 @@ static int hdmi_hpd_process_edid_match(struct tegra_hdmi *hdmi, int match)
 			hdmi->dc->use_cached_mode = true;
 			hdmi->plug_state = TEGRA_HDMI_MONITOR_ENABLE;
 		} else {
-			if ((hdmi->edid_src == EDID_SRC_PANEL)
-					&& !hdmi->dc->vedid && hdmi->enabled) {
+			if (!hdmi->dc->vedid && hdmi->enabled) {
 				tegra_nvhdcp_set_plug(hdmi->nvhdcp, false);
 				tegra_nvhdcp_set_plug(hdmi->nvhdcp, true);
 			}
@@ -924,6 +923,9 @@ static int tegra_dc_hdmi_hpd_init(struct tegra_dc *dc)
 			"hdmi: hpd gpio_request failed %d\n", err);
 	gpio_direction_input(hotplug_gpio);
 
+	INIT_DELAYED_WORK(&hdmi->hpd_worker, tegra_hdmi_hpd_worker);
+	mutex_init(&hdmi->hpd_lock);
+
 	err = request_threaded_irq(hotplug_irq,
 				NULL, tegra_hdmi_hpd_irq_handler,
 				(IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING |
@@ -943,10 +945,6 @@ static int tegra_dc_hdmi_hpd_init(struct tegra_dc *dc)
 	}
 
 skip_gpio_irq_settings:
-	INIT_DELAYED_WORK(&hdmi->hpd_worker, tegra_hdmi_hpd_worker);
-
-	mutex_init(&hdmi->hpd_lock);
-
 	return 0;
 fail:
 	gpio_free(hotplug_gpio);
@@ -2850,7 +2848,7 @@ static int tegra_hdmi_controller_enable(struct tegra_hdmi *hdmi)
 		tegra_dc_enable_disp_ctrl_mode(dc);
 
 	/* enable hdcp only if valid edid */
-	if (hdmi->edid_src == EDID_SRC_PANEL && !hdmi->dc->vedid && hdmi->edid &&
+	if (!hdmi->dc->vedid && hdmi->edid &&
 		(tegra_edid_get_monspecs(hdmi->edid, &hdmi->mon_spec) == 0))
 		tegra_nvhdcp_set_plug(hdmi->nvhdcp, true);
 
@@ -3069,8 +3067,7 @@ static inline void tegra_sor_set_ref_clk_rate(struct tegra_dc_sor_data *sor)
 static long tegra_dc_hdmi_setup_clk_nvdisplay(struct tegra_dc *dc,
 					      struct clk *clk)
 {
-#define MIN_PARENT_CLK	(27000000)
-#define DIVIDER_CAP	(128)
+#define MIN_CLK(clk)	(clk_round_rate(clk, 0))
 
 	struct clk *parent_clk;
 	struct tegra_hdmi *hdmi = tegra_dc_get_outdata(dc);
@@ -3108,18 +3105,7 @@ static long tegra_dc_hdmi_setup_clk_nvdisplay(struct tegra_dc *dc,
 				(yuv_flag == (FB_VMODE_Y444 | FB_VMODE_Y36)))
 			parent_clk_rate *= 3;
 
-		/*
-		 * For t18x plldx cannot go below 27MHz.
-		 * Real HW limit is lesser though.
-		 * 27Mz is chosen to have a safe margin.
-		 */
-		if (parent_clk_rate < (MIN_PARENT_CLK/DIVIDER_CAP)) {
-			dev_err(&dc->ndev->dev, "hdmi: unsupported parent clock rate (%ld).\n",
-					parent_clk_rate);
-			return -EINVAL;
-		}
-
-		while (parent_clk_rate < MIN_PARENT_CLK)
+		while (parent_clk_rate < MIN_CLK(parent_clk))
 			parent_clk_rate += parent_clk_rate;
 
 		clk_set_rate(parent_clk, parent_clk_rate);

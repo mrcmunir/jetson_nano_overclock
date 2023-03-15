@@ -1,7 +1,7 @@
 /*
  * Tegra capture common operations
  *
- * Copyright (c) 2017-2021, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2017-2022, NVIDIA CORPORATION.  All rights reserved.
  *
  * Author: Sudhir Vyas <svyas@nvidia.com>
  *         Ziqi Qing <zqing@nvidia.com>
@@ -96,6 +96,9 @@ void destroy_buffer_table(struct capture_buffer_table *tab)
 	struct hlist_node *next;
 	struct capture_mapping *pin;
 
+	if (unlikely(tab == NULL))
+		return;
+
 	write_lock(&tab->hlock);
 
 	hash_for_each_safe(tab->hhead, bkt, next, pin, hnode) {
@@ -183,6 +186,11 @@ get_mapping(
 	struct capture_mapping *pin;
 	struct dma_buf *buf;
 	void *err;
+
+	if (unlikely(tab == NULL)) {
+		pr_err("%s: invalid buffer table\n", __func__);
+		return ERR_PTR(-EINVAL);
+	}
 
 	buf = dma_buf_get((int)fd);
 	if (IS_ERR(buf)) {
@@ -272,6 +280,11 @@ int capture_buffer_request(
 	struct dma_buf *buf;
 	bool add = (bool)(flag & BUFFER_ADD);
 	int err = 0;
+
+	if (unlikely(tab == NULL)) {
+		pr_err("%s: invalid buffer table\n", __func__);
+		return -EINVAL;
+	}
 
 	mutex_lock(&req_lock);
 

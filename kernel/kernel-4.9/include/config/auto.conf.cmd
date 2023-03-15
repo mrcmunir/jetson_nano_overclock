@@ -188,6 +188,7 @@ deps_config := \
 	/home/aresuser/jetson_nano_overclock/kernel/nvidia/drivers/iio/light/Kconfig \
 	drivers/iio/light/Kconfig \
 	/home/aresuser/jetson_nano_overclock/kernel/nvidia/drivers/iio/imu/tsfw_icm20628/Kconfig \
+	/home/aresuser/jetson_nano_overclock/kernel/nvidia/drivers/iio/imu/bmi088/Kconfig \
 	/home/aresuser/jetson_nano_overclock/kernel/nvidia/drivers/iio/imu/nvs_bmi/Kconfig \
 	/home/aresuser/jetson_nano_overclock/kernel/nvidia/drivers/iio/imu/nvi_mpu/Kconfig \
 	/home/aresuser/jetson_nano_overclock/kernel/nvidia/drivers/iio/imu/Kconfig \
@@ -1219,7 +1220,7 @@ deps_config := \
 include/config/auto.conf: \
 	$(deps_config)
 
-ifneq "$(KERNELVERSION)" "4.9.253"
+ifneq "$(KERNELVERSION)" "4.9.299"
 include/config/auto.conf: FORCE
 endif
 ifneq "$(ARCH)" "arm64"
