@@ -331,6 +331,11 @@ static struct dvfs cpu_dvfs = {
 		{1479000000UL,	{  2519460,  -105063,     1611 } }, \
 		{1555500000UL,	{  2639809,  -108729,     1626 } }, \
 		{1683000000UL,	{  2889664,  -122173,     1834 } }, \
+		{1734000000UL,	{  3386160,  -154021,     2393 } }, \
+		{1836000000UL,	{  5100873,  -279186,     4747 } }, \
+		{1912500000UL,	{  5100873,  -279186,     4747 } }, \
+		{2014500000UL,	{  5100873,  -279186,     4747 } }, \
+		{2218500000UL,	{  5100873,  -279186,     4747 } }, \
 		{0,           	{ } }, \
 	}
 
@@ -399,14 +404,14 @@ static struct cpu_dvfs cpu_fv_dvfs_table[] = {
 		.speedo_id = 9,
 		.process_id = 0,
 		.min_mv = 900,
-		.max_mv = 1162,
+		.max_mv = 1300,
 		CPU_PLL_CVB_TABLE_EUCM2,
 	},
 	{
 		.speedo_id = 9,
 		.process_id = 1,
 		.min_mv = 900,
-		.max_mv = 1162,
+		.max_mv = 1300,
 		CPU_PLL_CVB_TABLE_EUCM2,
 	},
 	{
@@ -685,6 +690,8 @@ static struct dvfs cpu_lp_dvfs = {
 		{  844800, { }, {  1233208,     8144,     -940,      808,   -21583,      226 }, }, \
 		{  921600, { }, {  1275100,     8144,     -940,      808,   -21583,      226 }, }, \
 		{  998400, { }, {  1316991,     8144,     -940,      808,   -21583,      226 }, }, \
+		{ 1075200, { }, {  1358882,     8144,     -940,      808,   -21583,      226 }, }, \
+		{ 1152000, { }, {  1400774,     8144,     -940,      808,   -21583,      226 }, }, \
 		{ 0,	   { }, { }, }, \
 	}
 
@@ -768,8 +775,8 @@ static struct cvb_dvfs gpu_cvb_dvfs_table[] = {
 		.speedo_id = 2,
 		.process_id = -1,
 		.pll_min_millivolts = 818,
-		.max_mv = 1150,
-		.max_freq = 998400,
+		.max_mv = 1250,
+		.max_freq = 1152000,
 #ifdef CONFIG_TEGRA_USE_NA_GPCPLL
 		NA_FREQ_CVB_TABLE,
 #else
@@ -2029,10 +2036,6 @@ static void init_gpu_dvfs_table(struct device_node *node,
 	for (ret = 0, i = 0; i < table_size; i++) {
 		struct cvb_dvfs *d = &cvb_dvfs_table[i];
 		unsigned long max_freq = d->max_freq;
-		u32 f;
-
-		if (!of_property_read_u32(node, "nvidia,gpu-max-freq-khz", &f))
-			max_freq = min(max_freq, (unsigned long)f);
 
 		if (match_dvfs_one("gpu cvb", d->speedo_id, d->process_id,
 				   gpu_speedo_id, gpu_process_id)) {
