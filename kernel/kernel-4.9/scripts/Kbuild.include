@@ -458,6 +458,7 @@ endef
 #
 ###############################################################################
 
+
 # TEGRA_ROOT_PATH is the relative path to the directory one level upper than $srctree
 _TEGRA_ROOT_PATH = $(subst ^$(realpath $(srctree)/..)/,,^$(realpath $(kbuild-dir)))
 # _TEGRA_REL_PATH is path like "../../../" that points to directory one level

@@ -1,7 +1,7 @@
 /*
  * arch/arm64/boot/dts/tegra210-porg-p3448-common.dtsi
  *
-* Copyright (c) 2018-2021, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2018-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -605,7 +605,6 @@
 	};
 
 	chosen {
-		
 		nvidia,bootloader-vbus-enable=<0x1>;
 		nvidia,fastboot_without_usb;
 		nvidia,gpu-disable-power-saving;
@@ -791,6 +790,7 @@
 	dvfs {
 		compatible = "nvidia,tegra210-dvfs";
                 vdd-cpu-supply = <&cpu_ovr_reg>;
+                
 	};
 
 	rtc {
@@ -816,9 +816,9 @@
 	};
 
 	soft_wdt: soft_watchdog {
-		status = "okay";
 		compatible = "softdog-platform";
 		dt-override-status-odm-data = <0x00030000 0x00000000>;
+		status = "okay";
 	};
 
 	gpio: gpio@6000d000 {

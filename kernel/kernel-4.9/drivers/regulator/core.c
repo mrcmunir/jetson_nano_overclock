@@ -1319,6 +1319,7 @@ static int set_supply(struct regulator_dev *rdev,
 
 	rdev->supply = create_regulator(supply_rdev, &rdev->dev, "SUPPLY");
 	if (rdev->supply == NULL) {
+		module_put(supply_rdev->owner);
 		err = -ENOMEM;
 		return err;
 	}
@@ -1635,6 +1636,7 @@ static struct regulator_dev *regulator_dev_lookup(struct device *dev,
 		node = of_get_regulator(dev, supply);
 		if (node) {
 			r = of_find_regulator_by_node(node);
+			of_node_put(node);
 			if (r)
 				return r;
 			*ret = -EPROBE_DEFER;
@@ -4462,16 +4464,13 @@ regulator_register(const struct regulator_desc *regulator_desc,
 		    (unsigned long) atomic_inc_return(&regulator_no));
 
 	/* set regulator constraints */
-	if (init_data) {
+	if (init_data)
 		rdev->constraints = kmemdup(&init_data->constraints,
 					    sizeof(*rdev->constraints),
 					    GFP_KERNEL);
-		rdev->machine_constraints = true;
-	} else {
+	else
 		rdev->constraints = kzalloc(sizeof(*rdev->constraints),
 					    GFP_KERNEL);
-	}
-
 	if (!rdev->constraints) {
 		ret = -ENOMEM;
 		goto wash;

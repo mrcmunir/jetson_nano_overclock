@@ -170,12 +170,6 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
 	if (skb->len < 1)
 		goto drop;
 
-	/* There should be a pseudo header of 1 byte added by upper layers.
-	 * Check to make sure it is there before reading it.
-	 */
-	if (skb->len < 1)
-		goto drop;
-
 	switch (skb->data[0]) {
 	case X25_IFACE_DATA:
 		break;
@@ -413,7 +407,7 @@ static int lapbeth_device_event(struct notifier_block *this,
 	if (dev_net(dev) != &init_net)
 		return NOTIFY_DONE;
 
-	if (!dev_is_ethdev(dev))
+	if (!dev_is_ethdev(dev) && !lapbeth_get_x25_dev(dev))
 		return NOTIFY_DONE;
 
 	switch (event) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2018, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2014-2023, NVIDIA CORPORATION.  All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -1396,6 +1396,10 @@ static inline u32 gr_gpc0_gpccs_ctxsw_status_1_r(void)
 {
 	return 0x00502400U;
 }
+static inline u32 gr_gpc0_gpccs_ctxsw_mailbox__size_1_v(void)
+{
+	return 0x00000010U;
+}
 static inline u32 gr_fecs_ctxsw_idlestate_r(void)
 {
 	return 0x00409420U;
@@ -2343,6 +2347,14 @@ static inline u32 gr_gpcs_tpcs_tex_m_dbg2_su_rd_coalesce_en_f(u32 v)
 static inline u32 gr_gpcs_tpcs_tex_m_dbg2_su_rd_coalesce_en_m(void)
 {
 	return 0x1U << 4U;
+}
+static inline u32 gr_gpcs_tpcs_tex_m_dbg2_tex_rd_coalesce_en_f(u32 v)
+{
+	return (v & 0x1U) << 5U;
+}
+static inline u32 gr_gpcs_tpcs_tex_m_dbg2_tex_rd_coalesce_en_m(void)
+{
+	return 0x1U << 5U;
 }
 static inline u32 gr_gpccs_falcon_addr_r(void)
 {

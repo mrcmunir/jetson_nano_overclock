@@ -569,6 +569,7 @@ static void delete_and_unsubscribe_port(struct snd_seq_client *client,
 	up_write(&grp->list_mutex);
 }
 
+
 /* connect two ports */
 int snd_seq_port_connect(struct snd_seq_client *connector,
 			 struct snd_seq_client *src_client,
