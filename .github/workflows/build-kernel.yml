@@ -16,26 +16,32 @@ jobs:
     - name: Set up environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libncurses-dev bison flex libssl-dev bc wget
+        sudo apt-get install -y build-essential libncurses-dev bison flex libssl-dev bc wget xz-utils
 
     - name: Download and extract Linaro GCC 7.3.1 toolchain
       run: |
         wget https://developer.nvidia.com/embedded/dlc/l4t-gcc-7-3-1-toolchain-64-bit -O gcc-linaro-7.3.1.tar.xz
-        tar -xf gcc-linaro-7.3.1.tar.xz
+        mkdir -p gcc-linaro-7.3.1
+        tar -xf gcc-linaro-7.3.1.tar.xz -C gcc-linaro-7.3.1 --strip-components=1
         rm gcc-linaro-7.3.1.tar.xz
-        echo "Toolchain extracted to $PWD/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu"
+        echo "Toolchain extracted to $PWD/gcc-linaro-7.3.1"
+
+    - name: Verify toolchain extraction
+      run: |
+        ls -l $PWD/gcc-linaro-7.3.1/bin/aarch64-linux-gnu-gcc
+        ls -l $PWD/gcc-linaro-7.3.1/bin/aarch64-linux-gnu-g++
 
     - name: Set up cross-compilation environment
       run: |
         export ARCH=arm64
-        export TOOLCHAIN_PREFIX=$PWD/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+        export TOOLCHAIN_PREFIX=$PWD/gcc-linaro-7.3.1/bin/aarch64-linux-gnu-
         export CROSS_COMPILE=$TOOLCHAIN_PREFIX
-        export PATH=$PWD/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin:$PATH
+        export PATH=$PWD/gcc-linaro-7.3.1/bin:$PATH
         echo "TOOLCHAIN_PREFIX set to $TOOLCHAIN_PREFIX"
         echo "CROSS_COMPILE set to $CROSS_COMPILE"
         echo "PATH updated to include toolchain: $PATH"
 
-    - name: Verify toolchain
+    - name: Verify toolchain availability
       run: |
         aarch64-linux-gnu-gcc --version
         aarch64-linux-gnu-g++ --version
