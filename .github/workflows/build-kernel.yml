@@ -28,23 +28,22 @@ jobs:
 
     - name: Verify toolchain extraction
       run: |
+        echo "Contents of gcc-linaro-7.3.1/bin:"
+        ls -l $PWD/gcc-linaro-7.3.1/bin
+        echo "Checking for aarch64-linux-gnu-gcc:"
         ls -l $PWD/gcc-linaro-7.3.1/bin/aarch64-linux-gnu-gcc
+        echo "Checking for aarch64-linux-gnu-g++:"
         ls -l $PWD/gcc-linaro-7.3.1/bin/aarch64-linux-gnu-g++
 
     - name: Set up cross-compilation environment
       run: |
-        export ARCH=arm64
-        export TOOLCHAIN_PREFIX=$PWD/gcc-linaro-7.3.1/bin/aarch64-linux-gnu-
-        export CROSS_COMPILE=$TOOLCHAIN_PREFIX
-        export PATH=$PWD/gcc-linaro-7.3.1/bin:$PATH
+        echo "ARCH=arm64" >> $GITHUB_ENV
+        echo "TOOLCHAIN_PREFIX=$PWD/gcc-linaro-7.3.1/bin/aarch64-linux-gnu-" >> $GITHUB_ENV
+        echo "CROSS_COMPILE=$TOOLCHAIN_PREFIX" >> $GITHUB_ENV
+        echo "$PWD/gcc-linaro-7.3.1/bin" >> $GITHUB_PATH
         echo "TOOLCHAIN_PREFIX set to $TOOLCHAIN_PREFIX"
         echo "CROSS_COMPILE set to $CROSS_COMPILE"
-        echo "PATH updated to include toolchain: $PATH"
-
-    - name: Verify toolchain availability
-      run: |
-        aarch64-linux-gnu-gcc --version
-        aarch64-linux-gnu-g++ --version
+        echo "PATH updated to include toolchain: $PWD/gcc-linaro-7.3.1/bin"
 
     - name: Compile kernel
       run: |
