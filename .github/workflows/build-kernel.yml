@@ -23,14 +23,14 @@ jobs:
         wget https://developer.nvidia.com/embedded/dlc/l4t-gcc-7-3-1-toolchain-64-bit -O gcc-linaro-7.3.1.tar.xz
         tar -xf gcc-linaro-7.3.1.tar.xz
         rm gcc-linaro-7.3.1.tar.xz
-        echo "Toolchain extracted to $PWD/l4t-gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu"
+        echo "Toolchain extracted to $PWD/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu"
 
     - name: Set up cross-compilation environment
       run: |
         export ARCH=arm64
-        export TOOLCHAIN_PREFIX=$PWD/l4t-gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+        export TOOLCHAIN_PREFIX=$PWD/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
         export CROSS_COMPILE=$TOOLCHAIN_PREFIX
-        export PATH=$PWD/l4t-gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin:$PATH
+        export PATH=$PWD/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin:$PATH
         echo "TOOLCHAIN_PREFIX set to $TOOLCHAIN_PREFIX"
         echo "CROSS_COMPILE set to $CROSS_COMPILE"
         echo "PATH updated to include toolchain: $PATH"
