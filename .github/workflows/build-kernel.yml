@@ -16,15 +16,17 @@ jobs:
     - name: Set up QEMU for ARM64
       run: |
         sudo apt-get update
-        sudo apt-get install -y qemu qemu-user-static binfmt-support
+        sudo apt-get install -y qemu-user-static binfmt-support
+        sudo update-binfmts --enable qemu-aarch64
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
     - name: Build and run Docker container
       run: |
-        # Dockerfile temporal
+        # Crear un Dockerfile temporal
         cat <<EOF > Dockerfile
         FROM arm64v8/ubuntu:18.04
 
-        # Install dependencies
+    
         RUN apt-get update && apt-get install -y \
             build-essential \
             libncurses-dev \
@@ -36,13 +38,12 @@ jobs:
             git \
             && rm -rf /var/lib/apt/lists/*
 
-        # copy container
         COPY . /jetson_nano_kernel
 
-        # directory temp
+
         WORKDIR /jetson_nano_kernel
 
-        # Compilar el kernel y realizar los pasos adicionales
+
         CMD ./nvbuild.sh && \
             cd kernel/kernel-4.9 && \
             sudo make modules && \
@@ -53,13 +54,13 @@ jobs:
             cp -r arch/arm64/boot/dts/* /boot/
         EOF
 
-        # Construir y ejecutar el contenedor
+
         docker build -t jetson-kernel-builder .
         docker run --rm --privileged jetson-kernel-builder
 
     - name: Extract artifacts from Docker container
       run: |
-        # Docker create
+       
         docker create --name temp-container jetson-kernel-builder
         docker cp temp-container:/boot ./boot
         docker cp temp-container:/lib/modules ./modules
