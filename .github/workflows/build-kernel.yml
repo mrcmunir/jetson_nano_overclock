@@ -1,0 +1,61 @@
+name: Build Jetson Nano Kernel
+
+on:
+  push:
+    branches:
+      - jetpack32.7.4
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libncurses-dev bison flex libssl-dev bc wget
+
+    - name: Download and extract Linaro GCC 7.3.1 toolchain
+      run: |
+        wget https://developer.nvidia.com/embedded/dlc/l4t-gcc-7-3-1-toolchain-64-bit -O gcc-linaro-7.3.1.tar.xz
+        tar -xf gcc-linaro-7.3.1.tar.xz
+        rm gcc-linaro-7.3.1.tar.xz
+        echo "$PWD/gcc-linaro-7.3.1/bin" >> $GITHUB_PATH
+
+    - name: Set up cross-compilation environment
+      run: |
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+        export PATH=$PATH:$PWD/gcc-linaro-7.3.1/bin
+
+    - name: Compile kernel
+      run: |
+        sudo ./nvbuild.sh
+
+    - name: Install modules
+      run: |
+        cd kernel/kernel-4.9
+        sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
+        sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules_install INSTALL_MOD_PATH=$PWD/modules
+
+    - name: Compile and install kernel
+      run: |
+        cd kernel/kernel-4.9
+        sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+        sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- install INSTALL_PATH=$PWD/boot
+
+    - name: Package Image and modules
+      run: |
+        mkdir -p output/kernel
+        cp kernel/kernel-4.9/arch/arm64/boot/Image output/kernel/
+        cp -r kernel/kernel-4.9/modules/lib/modules/* output/kernel/modules/
+        zip -r kernel.zip output
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: kernel
+        path: kernel.zip
