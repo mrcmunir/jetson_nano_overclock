@@ -23,30 +23,39 @@ jobs:
         wget https://developer.nvidia.com/embedded/dlc/l4t-gcc-7-3-1-toolchain-64-bit -O gcc-linaro-7.3.1.tar.xz
         tar -xf gcc-linaro-7.3.1.tar.xz
         rm gcc-linaro-7.3.1.tar.xz
-        echo "$PWD/gcc-linaro-7.3.1/bin" >> $GITHUB_PATH
+        echo "Toolchain extracted to $PWD/l4t-gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu"
 
     - name: Set up cross-compilation environment
       run: |
         export ARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
-        export CROSS_COMPILE_AARCH64_PATH=$PWD/gcc-linaro-7.3.1/bin
-        export PATH=$PATH:$CROSS_COMPILE_AARCH64_PATH
+        export TOOLCHAIN_PREFIX=$PWD/l4t-gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+        export CROSS_COMPILE=$TOOLCHAIN_PREFIX
+        export PATH=$PWD/l4t-gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin:$PATH
+        echo "TOOLCHAIN_PREFIX set to $TOOLCHAIN_PREFIX"
+        echo "CROSS_COMPILE set to $CROSS_COMPILE"
+        echo "PATH updated to include toolchain: $PATH"
+
+    - name: Verify toolchain
+      run: |
+        aarch64-linux-gnu-gcc --version
+        aarch64-linux-gnu-g++ --version
 
     - name: Compile kernel
       run: |
-        sudo ./nvbuild.sh
+        echo "Compiling kernel with TOOLCHAIN_PREFIX=$TOOLCHAIN_PREFIX"
+        sudo -E ./nvbuild.sh
 
     - name: Install modules
       run: |
         cd kernel/kernel-4.9
-        sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
-        sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules_install INSTALL_MOD_PATH=$PWD/modules
+        sudo make ARCH=arm64 CROSS_COMPILE=$TOOLCHAIN_PREFIX modules
+        sudo make ARCH=arm64 CROSS_COMPILE=$TOOLCHAIN_PREFIX modules_install INSTALL_MOD_PATH=$PWD/modules
 
     - name: Compile and install kernel
       run: |
         cd kernel/kernel-4.9
-        sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
-        sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- install INSTALL_PATH=$PWD/boot
+        sudo make ARCH=arm64 CROSS_COMPILE=$TOOLCHAIN_PREFIX
+        sudo make ARCH=arm64 CROSS_COMPILE=$TOOLCHAIN_PREFIX install INSTALL_PATH=$PWD/boot
 
     - name: Package Image and modules
       run: |
