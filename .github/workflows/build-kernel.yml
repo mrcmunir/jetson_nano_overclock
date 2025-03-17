@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-kernel:
-    runs-on: ubuntu-latest  
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -22,11 +22,9 @@ jobs:
 
     - name: Build and run Docker container
       run: |
-        # Crear un Dockerfile temporal
         cat <<EOF > Dockerfile
         FROM arm64v8/ubuntu:18.04
 
-    
         RUN apt-get update && apt-get install -y \
             build-essential \
             libncurses-dev \
@@ -40,9 +38,7 @@ jobs:
 
         COPY . /jetson_nano_kernel
 
-
         WORKDIR /jetson_nano_kernel
-
 
         CMD ./nvbuild.sh && \
             cd kernel/kernel-4.9 && \
@@ -50,17 +46,14 @@ jobs:
             sudo make modules_install && \
             sudo make && \
             sudo make install && \
-            cp arch/arm64/boot/Image /boot/Image && \
-            cp -r arch/arm64/boot/dts/* /boot/
+            cp arch/arm64/boot/Image /boot/Image 
         EOF
 
-
         docker build -t jetson-kernel-builder .
-        docker run --rm --privileged jetson-kernel-builder
+        docker run --rm --privileged --memory="4g" jetson-kernel-builder
 
     - name: Extract artifacts from Docker container
       run: |
-       
         docker create --name temp-container jetson-kernel-builder
         docker cp temp-container:/boot ./boot
         docker cp temp-container:/lib/modules ./modules
