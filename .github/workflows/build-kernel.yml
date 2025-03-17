@@ -3,7 +3,7 @@ name: Build Jetson Nano Kernel
 on:
   push:
     branches:
-      - main  # Cambia esto a la rama que desees usar para activar el CI
+      - jetpack32.7.4
 
 jobs:
   build-kernel:
