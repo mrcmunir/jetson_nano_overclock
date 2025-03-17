@@ -29,7 +29,8 @@ jobs:
       run: |
         export ARCH=arm64
         export CROSS_COMPILE=aarch64-linux-gnu-
-        export PATH=$PATH:$PWD/gcc-linaro-7.3.1/bin
+        export CROSS_COMPILE_AARCH64_PATH=$PWD/gcc-linaro-7.3.1/bin
+        export PATH=$PATH:$CROSS_COMPILE_AARCH64_PATH
 
     - name: Compile kernel
       run: |
