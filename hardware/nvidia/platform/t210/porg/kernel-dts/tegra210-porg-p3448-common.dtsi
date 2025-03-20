@@ -769,6 +769,7 @@
 	clock@70110000 {
 		status = "okay";
 		vdd-cpu-supply = <&cpu_ovr_reg>;
+		nvidia,dfll-max-freq-khz = <1479000>;
 		nvidia,pwm-to-pmic;
 		nvidia,init-uv = <1000000>;
 		nvidia,sample-rate = <25000>;
@@ -790,7 +791,7 @@
 	dvfs {
 		compatible = "nvidia,tegra210-dvfs";
                 vdd-cpu-supply = <&cpu_ovr_reg>;
-                
+                nvidia,gpu-max-freq-khz = <921600>;
 	};
 
 	rtc {
