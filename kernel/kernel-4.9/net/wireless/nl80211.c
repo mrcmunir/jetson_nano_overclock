@@ -14151,7 +14151,7 @@ void cfg80211_ch_switch_notify(struct net_device *dev,
 
 	if ((wdev->iftype == NL80211_IFTYPE_STATION ||
 	     wdev->iftype == NL80211_IFTYPE_P2P_CLIENT) &&
-	    !WARN_ON(!wdev->current_bss))
+	    wdev->current_bss)
 		wdev->current_bss->pub.channel = chandef->chan;
 
 	nl80211_ch_switch_notify(rdev, dev, chandef, GFP_KERNEL,
